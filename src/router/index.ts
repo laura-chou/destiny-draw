@@ -43,7 +43,7 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   const prizeStore = usePrizeStore()
-  if (to.name !== 'settings' && prizeStore.prizes.length === 0) {
+  if (to.path !== '/settings' && prizeStore.prizes.length < 2) {
     next({ name: 'settings' })
   } else {
     next()

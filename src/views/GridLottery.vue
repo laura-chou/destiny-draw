@@ -44,14 +44,14 @@ const resultPrizeName = ref('')
 
 const cardWidth = computed(() => {
   if (typeof window !== 'undefined') {
-    return Math.min(window.innerWidth - 32, 400)
+    return Math.min(window.innerWidth - 16, 400)
   }
   return 400
 })
 
 const gridSize = computed(() => {
   if (typeof window !== 'undefined') {
-    const side = Math.min(window.innerWidth - 64, 300)
+    const side = Math.min(window.innerWidth - 80, 300)
     return side + 'px'
   }
   return '300px'

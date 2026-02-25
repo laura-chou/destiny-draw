@@ -83,12 +83,16 @@ const wheelData = computed(() => {
 
 const cardWidth = computed(() => {
   if (typeof window !== 'undefined') {
-    return Math.min(window.innerWidth - 32, 500)
+    return Math.min(window.innerWidth - 16, 500)
   }
   return 500
 })
 
 const canvasOptions = computed(() => {
+  const ww = typeof window !== 'undefined' ? window.innerWidth : 500
+  const containerWidth = Math.min(ww - 60, 460)
+  const radius = Math.floor(containerWidth / 2) - 5
+
   const count = wheelData.value.length
   let fontSize = 22
   if (count > 15) fontSize = 12
@@ -96,7 +100,7 @@ const canvasOptions = computed(() => {
   else if (count > 8) fontSize = 18
 
   return {
-    radius: 170,
+    radius: Math.min(radius, 170),
     textDirection: 'horizontal',
     fontSize: fontSize,
     borderWidth: 6,
@@ -138,9 +142,6 @@ const onDone = (result: any) => {
   display flex
   justify-content center
   padding 10px
-  background-color #102027
-  border-radius 50%
-  border 2px solid #37474f
 
 .play-btn
   border 2px solid #fff

@@ -17,10 +17,10 @@ v-container
     v-col(cols="12" md="4")
       v-btn(color="amber-darken-2" block size="large" @click="handleAddPrize" prepend-icon="mdi-plus") 新增獎項
 
-  v-card(v-if="prizes.length === 0" flat class="my-6 rounded-lg overflow-hidden")
+  v-card(v-if="prizes.length < 2" flat class="my-6 rounded-lg overflow-hidden")
     div.red-banner.d-flex.align-center.justify-center.pa-4
       v-icon(color="white" class="mr-2") mdi-alert-circle
-      span.text-white.font-weight-bold 請先輸入獎項名稱以開啟抽獎功能
+      span.text-white.font-weight-bold 請先輸入至少兩個獎項以開啟抽獎功能
 
   div.d-flex.flex-column.flex-sm-row.align-sm-center.justify-space-between.my-4(v-if="prizes.length > 0")
     div.text-h6.text-amber-lighten-3.mb-2.mb-sm-0 獎項列表 ({{ prizes.length }})
