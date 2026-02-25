@@ -1,13 +1,13 @@
 <template lang="pug">
-v-container.fill-height.d-flex.flex-column.align-center.justify-center
-  h2.mb-6.text-h4.font-weight-bold.text-purple-accent-2.game-title 幸運老虎機
+v-container.py-4.d-flex.flex-column.align-center.justify-center(style="min-height: calc(100vh - 64px)")
+  h2.mb-4.text-h5.text-sm-h4.font-weight-bold.text-purple-accent-2.game-title 幸運老虎機
 
-  v-card.mx-auto.pa-6.slot-outer-card(elevation="20" rounded="xl" max-width="400")
+  v-card.mx-auto.pa-4.pa-sm-6.slot-outer-card(elevation="20" rounded="xl" :max-width="cardWidth")
     div.lucky-slot-wrapper
       SlotMachine(
         ref="myLucky"
-        width="300px"
-        height="300px"
+        :width="gridSize"
+        :height="gridSize"
         :prizes="prizes"
         :blocks="blocks"
         :slots="slots"
@@ -15,7 +15,7 @@ v-container.fill-height.d-flex.flex-column.align-center.justify-center
         @end="endCallback"
       )
 
-    v-btn.mt-8(
+    v-btn.mt-4.mt-sm-8(
       color="purple-accent-4"
       size="x-large"
       @click="startCallback"
@@ -50,6 +50,21 @@ const myLucky = ref()
 const showResult = ref(false)
 const resultPrizeName = ref('')
 const spinning = ref(false)
+
+const cardWidth = computed(() => {
+  if (typeof window !== 'undefined') {
+    return Math.min(window.innerWidth - 32, 400)
+  }
+  return 400
+})
+
+const gridSize = computed(() => {
+  if (typeof window !== 'undefined') {
+    const side = Math.min(window.innerWidth - 64, 300)
+    return side + 'px'
+  }
+  return '300px'
+})
 
 const blocks = [
   { padding: '10px', background: '#9c27b0' },

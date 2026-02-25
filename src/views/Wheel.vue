@@ -1,10 +1,11 @@
 <template lang="pug">
-v-container.fill-height.d-flex.flex-column.align-center.justify-center
-  h2.mb-6.text-h4.font-weight-bold.text-amber-accent-4.game-title 幸運大轉盤
+v-container.py-4.d-flex.flex-column.align-center.justify-center(style="min-height: calc(100vh - 64px)")
+  h2.mb-4.text-h5.text-sm-h4.font-weight-bold.text-amber-accent-4.game-title 幸運大轉盤
 
-  v-card.mx-auto.pa-6.wheel-outer-card(elevation="20" rounded="xl" max-width="500")
+  v-card.mx-auto.pa-4.pa-sm-6.wheel-outer-card(elevation="20" rounded="xl" :max-width="cardWidth")
     div.wheel-wrapper
       FortuneWheel(
+        :key="wheelData.length"
         ref="wheel"
         v-model="winningId"
         :data="wheelData"
@@ -12,7 +13,7 @@ v-container.fill-height.d-flex.flex-column.align-center.justify-center
         @done="onDone"
       )
 
-    v-btn.mt-8(
+    v-btn.mt-4.mt-sm-8(
       color="amber-accent-4"
       size="x-large"
       @click="launchWheel"
@@ -80,13 +81,28 @@ const wheelData = computed(() => {
   return data
 })
 
-const canvasOptions = {
-  radius: 180,
-  textDirection: 'horizontal',
-  fontSize: 18,
-  borderWidth: 6,
-  borderColor: '#ffc107'
-}
+const cardWidth = computed(() => {
+  if (typeof window !== 'undefined') {
+    return Math.min(window.innerWidth - 32, 500)
+  }
+  return 500
+})
+
+const canvasOptions = computed(() => {
+  const count = wheelData.value.length
+  let fontSize = 22
+  if (count > 15) fontSize = 12
+  else if (count > 10) fontSize = 16
+  else if (count > 8) fontSize = 18
+
+  return {
+    radius: 170,
+    textDirection: 'horizontal',
+    fontSize: fontSize,
+    borderWidth: 6,
+    borderColor: '#ffc107'
+  }
+})
 
 const launchWheel = () => {
   if (wheelData.value.length === 0) return

@@ -1,13 +1,13 @@
 <template lang="pug">
-v-container.fill-height.d-flex.flex-column.align-center.justify-center
-  h2.mb-6.text-h4.font-weight-bold.text-cyan-accent-3.game-title 幸運九宮格
+v-container.py-4.d-flex.flex-column.align-center.justify-center(style="min-height: calc(100vh - 64px)")
+  h2.mb-4.text-h5.text-sm-h4.font-weight-bold.text-cyan-accent-3.game-title 幸運九宮格
 
-  v-card.mx-auto.pa-6.grid-outer-card(elevation="20" rounded="xl" max-width="400")
+  v-card.mx-auto.pa-4.pa-sm-6.grid-outer-card(elevation="20" rounded="xl" :max-width="cardWidth")
     div.lucky-grid-wrapper
       LuckyGrid(
         ref="myLucky"
-        width="300px"
-        height="300px"
+        :width="gridSize"
+        :height="gridSize"
         :prizes="prizes"
         :blocks="blocks"
         :buttons="buttons"
@@ -42,6 +42,21 @@ const myLucky = ref()
 const showResult = ref(false)
 const resultPrizeName = ref('')
 
+const cardWidth = computed(() => {
+  if (typeof window !== 'undefined') {
+    return Math.min(window.innerWidth - 32, 400)
+  }
+  return 400
+})
+
+const gridSize = computed(() => {
+  if (typeof window !== 'undefined') {
+    const side = Math.min(window.innerWidth - 64, 300)
+    return side + 'px'
+  }
+  return '300px'
+})
+
 const blocks = [
   { padding: '10px', background: '#00bcd4' },
   { padding: '5px', background: '#006064' },
@@ -65,7 +80,7 @@ const prizes = computed(() => {
     const p = storePrizes[i % storePrizes.length]
     luckyPrizes.push({
       ...positions[i],
-      fonts: [{ text: p?.name || '再接再厲', top: '35%', fontWeight: '700' }],
+      fonts: [{ text: p?.name || '再接再厲', top: '35%', fontWeight: '700', fontSize: '16px' }],
       background: i % 2 === 0 ? '#fffde7' : '#fff9c4',
       borderRadius: '8px',
       shadow: '0 4px 0 #fbc02d',

@@ -75,12 +75,19 @@ const handleStart = (e: MouseEvent | TouchEvent) => {
   ctx.value?.moveTo(x, y)
 }
 
+let lastCheckTime = 0
 const handleMove = (e: MouseEvent | TouchEvent) => {
   if (!isDrawing.value || finished.value) return
   e.preventDefault()
   const { x, y } = getPos(e)
   ctx.value?.lineTo(x, y)
   ctx.value?.stroke()
+
+  const now = Date.now()
+  if (now - lastCheckTime > 200) {
+    lastCheckTime = now
+    checkPercent()
+  }
 }
 
 const handleEnd = () => {

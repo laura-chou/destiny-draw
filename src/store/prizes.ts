@@ -42,10 +42,13 @@ export const usePrizeStore = defineStore('prizes', {
       this.saveToSession()
     },
     recordWin(prizeName: string, prizeId?: string) {
+      const now = new Date()
+      const timeStr = `${now.getFullYear()}/${(now.getMonth() + 1).toString().padStart(2, '0')}/${now.getDate().toString().padStart(2, '0')} ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`
+
       const record: WinRecord = {
-        id: this.history.length + 1,
+        id: Date.now(),
         prizeName,
-        time: new Date().toLocaleString('zh-TW')
+        time: timeStr
       }
       this.history.unshift(record)
 
@@ -60,6 +63,14 @@ export const usePrizeStore = defineStore('prizes', {
         }
       }
 
+      this.saveToSession()
+    },
+    clearHistory() {
+      this.history = []
+      this.saveToSession()
+    },
+    deleteMultiplePrizes(ids: string[]) {
+      this.prizes = this.prizes.filter(p => !ids.includes(p.id))
       this.saveToSession()
     },
     saveToSession() {
