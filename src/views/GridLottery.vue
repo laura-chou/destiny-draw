@@ -1,17 +1,18 @@
 <template lang="pug">
 div.text-center
-  h2.mb-4 九宮格抽獎
-  div.lucky-grid-container
-    LuckyGrid(
-      ref="myLucky"
-      width="300px"
-      height="300px"
-      :prizes="prizes"
-      :blocks="blocks"
-      :buttons="buttons"
-      @start="startCallback"
-      @end="endCallback"
-    )
+  h2.mb-4 九宮格
+  v-sheet.mx-auto.pa-4(elevation="2" rounded="lg" max-width="350" color="#f8f9fa")
+    div.lucky-grid-container
+      LuckyGrid(
+        ref="myLucky"
+        width="300px"
+        height="300px"
+        :prizes="prizes"
+        :blocks="blocks"
+        :buttons="buttons"
+        @start="startCallback"
+        @end="endCallback"
+      )
   v-dialog(v-model="showResult" max-width="300")
     v-card
       v-card-title.text-center 中獎了！

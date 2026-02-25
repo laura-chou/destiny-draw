@@ -1,18 +1,19 @@
 <template lang="pug">
 div.text-center
   h2.mb-4 老虎機
-  div.lucky-slot-container
-    SlotMachine(
-      ref="myLucky"
-      width="300px"
-      height="300px"
-      :prizes="prizes"
-      :blocks="blocks"
-      :slots="slots"
-      :buttons="buttons"
-      @end="endCallback"
-    )
-  v-btn.mt-6(color="primary" @click="startCallback") 開始抽獎
+  v-sheet.mx-auto.pa-4(elevation="2" rounded="lg" max-width="350" color="#f8f9fa")
+    div.lucky-slot-container
+      SlotMachine(
+        ref="myLucky"
+        width="300px"
+        height="300px"
+        :prizes="prizes"
+        :blocks="blocks"
+        :slots="slots"
+        :buttons="buttons"
+        @end="endCallback"
+      )
+    v-btn.mt-6(color="primary" size="large" @click="startCallback" block rounded="pill") 開始抽獎
 
   v-dialog(v-model="showResult" max-width="300")
     v-card

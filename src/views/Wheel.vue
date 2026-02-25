@@ -1,14 +1,15 @@
 <template lang="pug">
 div.text-center
-  h2.mb-4 幸運輪盤
-  div.wheel-container
-    FortuneWheel(
-      ref="wheel"
-      v-model="winningId"
-      :data="wheelData"
-      @done="onDone"
-    )
-  v-btn.mt-6(color="primary" @click="launchWheel" :disabled="spinning") 開始旋轉
+  h2.mb-4 轉盤
+  v-sheet.mx-auto.pa-4(elevation="2" rounded="lg" max-width="400" color="#f8f9fa")
+    div.wheel-container
+      FortuneWheel(
+        ref="wheel"
+        v-model="winningId"
+        :data="wheelData"
+        @done="onDone"
+      )
+    v-btn.mt-6(color="primary" size="large" @click="launchWheel" :disabled="spinning" block rounded="pill") 開始旋轉
 
   v-dialog(v-model="showResult" max-width="300")
     v-card

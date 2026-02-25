@@ -1,19 +1,20 @@
 <template lang="pug">
 div.text-center
   h2.mb-4 刮刮樂
-  div.scratch-container.mb-4
-    ScratchCard(
-      v-if="!restarting"
-      :imageUrl="coverImage"
-      :cardWidth="300"
-      :cardHeight="150"
-      :finishPercent="60"
-      @complete="onComplete"
-    )
-      div.result-container
-        h3 {{ currentPrize?.name }}
+  v-sheet.mx-auto.pa-4(elevation="2" rounded="lg" max-width="350" color="#f8f9fa")
+    div.scratch-container.mb-4
+      ScratchCard(
+        v-if="!restarting"
+        :imageUrl="coverImage"
+        :cardWidth="300"
+        :cardHeight="150"
+        :finishPercent="60"
+        @complete="onComplete"
+      )
+        div.result-container
+          h3 {{ currentPrize?.name }}
 
-  v-btn(color="secondary" @click="resetGame" :disabled="!isFinished") 再玩一次
+    v-btn(color="secondary" size="large" @click="resetGame" :disabled="!isFinished" block rounded="pill") 再玩一次
 
   v-dialog(v-model="showResult" max-width="300")
     v-card
