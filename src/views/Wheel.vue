@@ -1,23 +1,42 @@
 <template lang="pug">
-div.text-center
-  h2.mb-4 轉盤
-  v-sheet.mx-auto.pa-4(elevation="2" rounded="lg" max-width="400" color="#f8f9fa")
-    div.wheel-container
+v-container.fill-height.d-flex.flex-column.align-center.justify-center
+  h2.mb-6.text-h4.font-weight-bold.text-amber-accent-4.game-title 幸運大轉盤
+
+  v-card.mx-auto.pa-6.wheel-outer-card(elevation="20" rounded="xl" max-width="500")
+    div.wheel-wrapper
       FortuneWheel(
         ref="wheel"
         v-model="winningId"
         :data="wheelData"
+        :canvas="canvasOptions"
         @done="onDone"
       )
-    v-btn.mt-6(color="primary" size="large" @click="launchWheel" :disabled="spinning" block rounded="pill") 開始旋轉
 
-  v-dialog(v-model="showResult" max-width="300")
-    v-card
-      v-card-title.text-center 中獎了！
-      v-card-text.text-center.text-h5 {{ resultPrizeName }}
-      v-card-actions
-        v-spacer
-        v-btn(color="primary" @click="showResult = false") 確定
+    v-btn.mt-8(
+      color="amber-accent-4"
+      size="x-large"
+      @click="launchWheel"
+      :disabled="spinning"
+      block
+      rounded="pill"
+      class="play-btn text-black font-weight-black"
+    ) {{ spinning ? '旋轉中...' : '開始旋轉' }}
+
+  v-dialog(v-model="showResult" max-width="320" persistent)
+    v-card.rounded-xl.pa-4.result-card
+      v-card-title.text-center.text-h5.font-weight-bold.text-amber 中獎了！
+      v-card-text.text-center.py-6
+        div.text-h4.font-weight-black.text-white {{ resultPrizeName }}
+      v-card-actions.justify-center
+        v-btn(
+          color="amber-accent-4"
+          variant="elevated"
+          size="large"
+          rounded="pill"
+          width="160"
+          class="text-black"
+          @click="showResult = false"
+        ) 確定
 </template>
 
 <script setup lang="ts">
@@ -33,19 +52,20 @@ const showResult = ref(false)
 const resultPrizeName = ref('')
 
 const colors = [
-  { bgColor: '#7d7db3', color: '#ffffff' },
-  { bgColor: '#ffffff', color: '#000000' },
-  { bgColor: '#c92729', color: '#ffffff' },
-  { bgColor: '#333333', color: '#ffffff' }
+  { bgColor: '#d32f2f', color: '#ffffff' }, // Red
+  { bgColor: '#1976d2', color: '#ffffff' }, // Blue
+  { bgColor: '#fbc02d', color: '#000000' }, // Gold
+  { bgColor: '#388e3c', color: '#ffffff' }, // Green
+  { bgColor: '#7b1fa2', color: '#ffffff' }, // Purple
+  { bgColor: '#e65100', color: '#ffffff' }  // Orange
 ]
 
 const wheelData = computed(() => {
   const storePrizes = prizeStore.prizes
   if (storePrizes.length === 0) return []
 
-  // Need at least a few segments for a wheel to look good
   const data = []
-  const displayCount = Math.max(storePrizes.length, 4)
+  const displayCount = storePrizes.length < 6 ? storePrizes.length * 2 : storePrizes.length
 
   for (let i = 0; i < displayCount; i++) {
     const p = storePrizes[i % storePrizes.length]
@@ -54,18 +74,24 @@ const wheelData = computed(() => {
       id: i + 1,
       value: p.name,
       ...colorSet,
-      // Keep track of original prize info
       prizeId: p.id
     })
   }
   return data
 })
 
+const canvasOptions = {
+  radius: 180,
+  textDirection: 'horizontal',
+  fontSize: 18,
+  borderWidth: 6,
+  borderColor: '#ffc107'
+}
+
 const launchWheel = () => {
   if (wheelData.value.length === 0) return
 
   spinning.value = true
-  // Randomly pick the winning ID from the data array
   const randomIndex = Math.floor(Math.random() * wheelData.value.length)
   winningId.value = wheelData.value[randomIndex].id
 
@@ -77,15 +103,40 @@ const onDone = (result: any) => {
   resultPrizeName.value = result.value
   showResult.value = true
 
-  // Use the stored prizeId if available
   const prizeId = result.prizeId
   prizeStore.recordWin(result.value, prizeId)
 }
 </script>
 
 <style lang="stylus" scoped>
-.wheel-container
+.game-title
+  text-shadow 2px 2px 4px rgba(0,0,0,0.5), 0 0 20px #ffc107
+  letter-spacing 4px
+
+.wheel-outer-card
+  background radial-gradient(circle, #263238 0%, #102027 100%)
+  border 4px solid #ffc107
+  box-shadow 0 0 30px rgba(255, 193, 7, 0.3)
+
+.wheel-wrapper
   display flex
   justify-content center
-  margin-top 20px
+  padding 10px
+  background-color #102027
+  border-radius 50%
+  border 2px solid #37474f
+
+.play-btn
+  border 2px solid #fff
+  transition all 0.3s ease
+  &:hover:not(:disabled)
+    transform scale(1.05)
+    box-shadow 0 0 20px #ffc107
+
+.result-card
+  background #1a237e
+  border 3px solid #ffc107
+
+  .v-card-title
+    text-shadow 0 0 10px #ffeb3b
 </style>

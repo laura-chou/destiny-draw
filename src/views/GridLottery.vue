@@ -1,8 +1,9 @@
 <template lang="pug">
-div.text-center
-  h2.mb-4 九宮格
-  v-sheet.mx-auto.pa-4(elevation="2" rounded="lg" max-width="350" color="#f8f9fa")
-    div.lucky-grid-container
+v-container.fill-height.d-flex.flex-column.align-center.justify-center
+  h2.mb-6.text-h4.font-weight-bold.text-cyan-accent-3.game-title 幸運九宮格
+
+  v-card.mx-auto.pa-6.grid-outer-card(elevation="20" rounded="xl" max-width="400")
+    div.lucky-grid-wrapper
       LuckyGrid(
         ref="myLucky"
         width="300px"
@@ -10,16 +11,26 @@ div.text-center
         :prizes="prizes"
         :blocks="blocks"
         :buttons="buttons"
+        :defaultStyle="defaultStyle"
         @start="startCallback"
         @end="endCallback"
       )
-  v-dialog(v-model="showResult" max-width="300")
-    v-card
-      v-card-title.text-center 中獎了！
-      v-card-text.text-center.text-h5 {{ resultPrizeName }}
-      v-card-actions
-        v-spacer
-        v-btn(color="primary" @click="showResult = false") 確定
+
+  v-dialog(v-model="showResult" max-width="320" persistent)
+    v-card.rounded-xl.pa-4.result-card
+      v-card-title.text-center.text-h5.font-weight-bold.text-cyan-accent-2 中獎了！
+      v-card-text.text-center.py-6
+        div.text-h4.font-weight-black.text-white {{ resultPrizeName }}
+      v-card-actions.justify-center
+        v-btn(
+          color="cyan-accent-4"
+          variant="elevated"
+          size="large"
+          rounded="pill"
+          width="160"
+          class="text-black"
+          @click="showResult = false"
+        ) 確定
 </template>
 
 <script setup lang="ts">
@@ -32,9 +43,14 @@ const showResult = ref(false)
 const resultPrizeName = ref('')
 
 const blocks = [
-  { padding: '10px', background: '#869cfa' },
-  { padding: '10px', background: '#e9e8fe' },
+  { padding: '10px', background: '#00bcd4' },
+  { padding: '5px', background: '#006064' },
 ]
+
+const defaultStyle = {
+  background: '#e0f7fa',
+  fonts: [{ fontSize: '14px', fontColor: '#006064' }]
+}
 
 const prizes = computed(() => {
   const storePrizes = prizeStore.prizes
@@ -49,9 +65,10 @@ const prizes = computed(() => {
     const p = storePrizes[i % storePrizes.length]
     luckyPrizes.push({
       ...positions[i],
-      fonts: [{ text: p?.name || '再接再厲', top: '30%' }],
-      background: i % 2 === 0 ? '#f9e3bb' : '#f8d384',
-      // Store original ID to handle removal
+      fonts: [{ text: p?.name || '再接再厲', top: '35%', fontWeight: '700' }],
+      background: i % 2 === 0 ? '#fffde7' : '#fff9c4',
+      borderRadius: '8px',
+      shadow: '0 4px 0 #fbc02d',
       id: p?.id
     })
   }
@@ -61,8 +78,9 @@ const prizes = computed(() => {
 const buttons = [
   {
     x: 1, y: 1,
-    background: '#9c9ddf',
-    fonts: [{ text: '開始', top: '25%' }]
+    background: '#ff5722',
+    shadow: '0 4px 0 #e64a19',
+    fonts: [{ text: 'GO!', top: '25%', fontColor: '#fff', fontSize: '24px', fontWeight: '900' }]
   }
 ]
 
@@ -77,15 +95,31 @@ const startCallback = () => {
 const endCallback = (prize: any) => {
   resultPrizeName.value = prize.fonts[0].text
   showResult.value = true
-  // Record win and handle removal if necessary
-  // If prize has an id, use it, otherwise use name
   prizeStore.recordWin(resultPrizeName.value, prize.id)
 }
 </script>
 
 <style lang="stylus" scoped>
-.lucky-grid-container
+.game-title
+  text-shadow 2px 2px 4px rgba(0,0,0,0.5), 0 0 20px #00e5ff
+  letter-spacing 4px
+
+.grid-outer-card
+  background radial-gradient(circle, #004d40 0%, #00241a 100%)
+  border 4px solid #00e5ff
+  box-shadow 0 0 30px rgba(0, 229, 255, 0.3)
+
+.lucky-grid-wrapper
   display flex
   justify-content center
-  margin-top 20px
+  padding 10px
+  background-color #00241a
+  border-radius 12px
+
+.result-card
+  background #004d40
+  border 3px solid #00e5ff
+
+  .v-card-title
+    text-shadow 0 0 10px #00e5ff
 </style>

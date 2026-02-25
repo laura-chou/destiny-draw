@@ -1,43 +1,57 @@
 <template lang="pug">
-div.text-center
-  h2.mb-4 刮刮樂
-  v-sheet.mx-auto.pa-4(elevation="2" rounded="lg" max-width="350" color="#f8f9fa")
-    div.scratch-container.mb-4
-      ScratchCard(
+v-container.fill-height.d-flex.flex-column.align-center.justify-center
+  h2.mb-6.text-h4.font-weight-bold.text-deep-orange-darken-3 刮刮樂
+
+  v-card.mx-auto.pa-6.scratch-outer-card(elevation="10" rounded="xl" max-width="400")
+    div.scratch-container.mb-6
+      CustomScratchCard(
         v-if="!restarting"
-        :imageUrl="coverImage"
-        :cardWidth="300"
-        :cardHeight="150"
+        ref="scratchCardRef"
+        :width="300"
+        :height="180"
         :finishPercent="60"
         @complete="onComplete"
       )
-        div.result-container
-          h3 {{ currentPrize?.name }}
+        div.prize-reveal-area
+          div.prize-text {{ currentPrize?.name }}
 
-    v-btn(color="secondary" size="large" @click="resetGame" :disabled="!isFinished" block rounded="pill") 再玩一次
+    v-btn(
+      color="deep-orange-darken-4"
+      size="x-large"
+      @click="resetGame"
+      :disabled="!isFinished"
+      block
+      rounded="pill"
+      class="elevation-4"
+    ) 再玩一次
 
-  v-dialog(v-model="showResult" max-width="300")
-    v-card
-      v-card-title.text-center 中獎了！
-      v-card-text.text-center.text-h5 {{ currentPrize?.name }}
-      v-card-actions
-        v-spacer
-        v-btn(color="primary" @click="showResult = false") 確定
+  v-dialog(v-model="showResult" max-width="320" persistent)
+    v-card.rounded-xl.pa-4
+      v-card-title.text-center.text-h5.font-weight-bold.text-deep-orange 恭喜中獎！
+      v-card-text.text-center.py-6
+        div.text-h4.font-weight-black.text-grey-darken-3 {{ currentPrize?.name }}
+      v-card-actions.justify-center
+        v-btn(
+          color="deep-orange-darken-2"
+          variant="elevated"
+          size="large"
+          rounded="pill"
+          width="160"
+          @click="showResult = false"
+        ) 確定
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, nextTick } from 'vue'
 import { usePrizeStore } from '@/store/prizes'
-import ScratchCard from 'vue-scratchcard/dist/vue-scratchcard.es.js'
+import CustomScratchCard from '@/components/CustomScratchCard.vue'
 
 const prizeStore = usePrizeStore()
 const currentPrize = ref<any>(null)
 const isFinished = ref(false)
 const showResult = ref(false)
 const restarting = ref(false)
-
-// A grey rectangle data URL for the cover
-const coverImage = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASwAAACWAQMAAAB6S89VAAAAA1BMVEUAAACnej3aAAAAAXRSTlMAQObYZgAAABpJREFUOMtjGAWjYBSMglEwCkbBKBgFowAFAAgAAAHv9K9XAAAAAElFTkSuQmCC'
+const scratchCardRef = ref(null)
 
 const pickRandomPrize = () => {
   const prizes = prizeStore.prizes
@@ -68,17 +82,29 @@ onMounted(() => {
 </script>
 
 <style lang="stylus" scoped>
+.scratch-outer-card
+  background linear-gradient(135deg, #ff9800 0%, #ff5722 100%)
+  border 4px solid #fff3e0
+
 .scratch-container
   display flex
   justify-content center
   position relative
+  filter drop-shadow(0 4px 8px rgba(0,0,0,0.2))
 
-.result-container
+.prize-reveal-area
   width 100%
   height 100%
   display flex
   align-items center
   justify-content center
-  background #eee
-  border 2px dashed #ccc
+  background radial-gradient(circle, #fff 0%, #f5f5f5 100%)
+
+  .prize-text
+    font-size 2rem
+    font-weight 900
+    color #d84315
+    text-shadow 1px 1px 2px rgba(0,0,0,0.1)
+    text-align center
+    padding 10px
 </style>

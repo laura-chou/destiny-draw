@@ -1,8 +1,9 @@
 <template lang="pug">
-div.text-center
-  h2.mb-4 老虎機
-  v-sheet.mx-auto.pa-4(elevation="2" rounded="lg" max-width="350" color="#f8f9fa")
-    div.lucky-slot-container
+v-container.fill-height.d-flex.flex-column.align-center.justify-center
+  h2.mb-6.text-h4.font-weight-bold.text-purple-accent-2.game-title 幸運老虎機
+
+  v-card.mx-auto.pa-6.slot-outer-card(elevation="20" rounded="xl" max-width="400")
+    div.lucky-slot-wrapper
       SlotMachine(
         ref="myLucky"
         width="300px"
@@ -10,18 +11,34 @@ div.text-center
         :prizes="prizes"
         :blocks="blocks"
         :slots="slots"
-        :buttons="buttons"
+        :defaultStyle="defaultStyle"
         @end="endCallback"
       )
-    v-btn.mt-6(color="primary" size="large" @click="startCallback" block rounded="pill") 開始抽獎
 
-  v-dialog(v-model="showResult" max-width="300")
-    v-card
-      v-card-title.text-center 中獎了！
-      v-card-text.text-center.text-h5 {{ resultPrizeName }}
-      v-card-actions
-        v-spacer
-        v-btn(color="primary" @click="showResult = false") 確定
+    v-btn.mt-8(
+      color="purple-accent-4"
+      size="x-large"
+      @click="startCallback"
+      :disabled="spinning"
+      block
+      rounded="pill"
+      class="play-btn text-white font-weight-black"
+    ) {{ spinning ? '拉霸中...' : '拉霸！' }}
+
+  v-dialog(v-model="showResult" max-width="320" persistent)
+    v-card.rounded-xl.pa-4.result-card
+      v-card-title.text-center.text-h5.font-weight-bold.text-purple-accent-1 中獎了！
+      v-card-text.text-center.py-6
+        div.text-h4.font-weight-black.text-white {{ resultPrizeName }}
+      v-card-actions.justify-center
+        v-btn(
+          color="purple-accent-4"
+          variant="elevated"
+          size="large"
+          rounded="pill"
+          width="160"
+          @click="showResult = false"
+        ) 確定
 </template>
 
 <script setup lang="ts">
@@ -32,23 +49,28 @@ const prizeStore = usePrizeStore()
 const myLucky = ref()
 const showResult = ref(false)
 const resultPrizeName = ref('')
+const spinning = ref(false)
 
 const blocks = [
-  { padding: '10px', background: '#869cfa' },
-  { padding: '10px', background: '#e9e8fe' },
+  { padding: '10px', background: '#9c27b0' },
+  { padding: '5px', background: '#4a148c' },
 ]
+
+const defaultStyle = {
+  background: '#f3e5f5',
+  fonts: [{ fontSize: '18px', fontColor: '#4a148c', fontWeight: 'bold' }]
+}
 
 const prizes = computed(() => {
   const storePrizes = prizeStore.prizes
   const luckyPrizes = []
 
-  // Fill with at least some prizes
-  const count = Math.max(storePrizes.length, 5)
+  const count = Math.max(storePrizes.length, 6)
   for (let i = 0; i < count; i++) {
     const p = storePrizes[i % storePrizes.length]
     luckyPrizes.push({
-      fonts: [{ text: p?.name || '空', top: '30%' }],
-      background: i % 2 === 0 ? '#f9e3bb' : '#f8d384',
+      fonts: [{ text: p?.name || '?', top: '35%' }],
+      background: i % 2 === 0 ? '#fff' : '#f3e5f5',
       id: p?.id
     })
   }
@@ -57,26 +79,22 @@ const prizes = computed(() => {
 
 const slots = [
   { speed: 10 },
-  { speed: 15 },
-  { speed: 20 },
-]
-
-const buttons = [
-  /* Optional buttons inside the canvas, but we use an external v-btn */
+  { speed: 12 },
+  { speed: 14 },
 ]
 
 const startCallback = () => {
+  if (spinning.value) return
+  spinning.value = true
   myLucky.value.play()
   setTimeout(() => {
-    // For slot machine, usually you stop at an index, and all reels stop there for a win,
-    // or different indices. Here we'll make them all stop at the same for simplicity or random.
     const index = Math.floor(Math.random() * prizes.value.length)
     myLucky.value.stop([index, index, index])
-  }, 2000)
+  }, 2500)
 }
 
 const endCallback = (prize: any) => {
-  // prize is an array if multi-reel
+  spinning.value = false
   const firstPrize = Array.isArray(prize) ? prize[0] : prize
   resultPrizeName.value = firstPrize.fonts[0].text
   showResult.value = true
@@ -85,8 +103,33 @@ const endCallback = (prize: any) => {
 </script>
 
 <style lang="stylus" scoped>
-.lucky-slot-container
+.game-title
+  text-shadow 2px 2px 4px rgba(0,0,0,0.5), 0 0 20px #e040fb
+  letter-spacing 4px
+
+.slot-outer-card
+  background radial-gradient(circle, #311b92 0%, #1a237e 100%)
+  border 4px solid #e040fb
+  box-shadow 0 0 30px rgba(224, 64, 251, 0.3)
+
+.lucky-slot-wrapper
   display flex
   justify-content center
-  margin-top 20px
+  padding 10px
+  background-color #1a237e
+  border-radius 12px
+
+.play-btn
+  border 2px solid #fff
+  transition all 0.3s ease
+  &:hover:not(:disabled)
+    transform translateY(-3px)
+    box-shadow 0 0 20px #e040fb
+
+.result-card
+  background #311b92
+  border 3px solid #e040fb
+
+  .v-card-title
+    text-shadow 0 0 10px #e040fb
 </style>

@@ -8,8 +8,9 @@ v-container
         v-switch(v-model="excludeWinners" color="orange" hide-details)
         span.ml-2.text-orange-darken-3.font-weight-bold 排除中獎
 
-  v-card(flat class="mb-4")
-    div.red-banner
+  v-card(v-if="prizes.length === 0" flat class="mb-4")
+    div.red-banner.d-flex.align-center.justify-center
+      span.text-white.font-weight-bold 請先輸入獎項名稱以開啟抽獎功能
 
   v-card(flat class="prize-table-card")
     v-table.prize-table
