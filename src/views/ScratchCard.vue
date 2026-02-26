@@ -37,15 +37,17 @@ v-container.py-4.d-flex.flex-column.align-center.justify-center(style="min-heigh
           size="large"
           rounded="pill"
           width="160"
-          @click="showResult = false"
+          @click="confirmResult"
         ) 確定
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted, nextTick } from 'vue'
+import { useRouter } from 'vue-router'
 import { usePrizeStore } from '@/store/prizes'
 import CustomScratchCard from '@/components/CustomScratchCard.vue'
 
+const router = useRouter()
 const prizeStore = usePrizeStore()
 const currentPrize = ref<any>(null)
 const isFinished = ref(false)
@@ -65,7 +67,7 @@ const scratchWidth = computed(() => {
 })
 
 const pickRandomPrize = () => {
-  const prizes = prizeStore.prizes
+  const prizes = prizeStore.availablePrizes
   if (prizes.length > 0) {
     currentPrize.value = prizes[Math.floor(Math.random() * prizes.length)]
   }
@@ -85,6 +87,13 @@ const resetGame = async () => {
   pickRandomPrize()
   await nextTick()
   restarting.value = false
+}
+
+const confirmResult = () => {
+  showResult.value = false
+  if (prizeStore.availablePrizes.length < 2) {
+    router.push('/settings')
+  }
 }
 
 onMounted(() => {

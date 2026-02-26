@@ -12,18 +12,20 @@ v-container
           v-switch(v-model="excludeWinners" color="orange-darken-3" hide-details inset)
 
   v-row(align="center")
-    v-col(cols="12" md="8")
+    v-col(cols="12" md="6")
       v-text-field(v-model="newPrizeName" label="輸入獎項名稱" hide-details variant="solo" @keyup.enter="handleAddPrize" prepend-inner-icon="mdi-gift")
-    v-col(cols="12" md="4")
+    v-col(cols="12" md="3")
       v-btn(color="amber-darken-2" block size="large" @click="handleAddPrize" prepend-icon="mdi-plus") 新增獎項
+    v-col(cols="12" md="3")
+      v-btn(color="blue-grey-darken-3" block size="large" @click="handleResetWinners" prepend-icon="mdi-refresh") 重置獎池
 
-  v-card(v-if="prizes.length < 2" flat class="my-6 rounded-lg overflow-hidden")
+  v-card(v-if="availablePrizes.length < 2" flat class="my-6 rounded-lg overflow-hidden")
     div.red-banner.d-flex.align-center.justify-center.pa-4
       v-icon(color="white" class="mr-2") mdi-alert-circle
       span.text-white.font-weight-bold 請先輸入至少兩個獎項以開啟抽獎功能
 
   div.d-flex.flex-column.flex-sm-row.align-sm-center.justify-space-between.my-4(v-if="prizes.length > 0")
-    div.text-h6.text-amber-lighten-3.mb-2.mb-sm-0 獎項列表 ({{ prizes.length }})
+    div.text-h6.text-amber-lighten-3.mb-2.mb-sm-0 獎項列表 ({{ prizes.length }}，剩餘 {{ availablePrizes.length }} 可抽)
     v-btn(v-if="selectedPrizes.length > 0" color="red-darken-2" prepend-icon="mdi-delete" @click="handleDeleteSelected") 刪除所選 ({{ selectedPrizes.length }})
 
   v-card(v-if="prizes.length > 0" flat class="prize-table-card rounded-lg overflow-hidden mb-8")
@@ -35,10 +37,12 @@ v-container
           th.text-left 名稱
           th.text-center(style="width: 120px") 操作
       tbody
-        tr(v-for="prize in prizes" :key="prize.id")
+        tr(v-for="prize in prizes" :key="prize.id" :class="{ 'won-row': prize.isWon }")
           td.text-center
             v-checkbox-btn(v-model="selectedPrizes" :value="prize.id" color="amber-darken-4")
-          td.text-left {{ prize.name }}
+          td.text-left
+            span(:class="{ 'text-decoration-line-through text-red-darken-4': prize.isWon }") {{ prize.name }}
+            v-chip.ml-2(v-if="prize.isWon" size="x-small" color="red-darken-4" variant="flat") 已中獎
           td.text-center
             div.d-flex.justify-center
               v-btn(icon="mdi-pencil" variant="text" color="blue-darken-2" size="small" @click="openEditDialog(prize)")
@@ -70,6 +74,7 @@ const excludeWinners = computed({
 })
 
 const prizes = computed(() => prizeStore.prizes)
+const availablePrizes = computed(() => prizeStore.availablePrizes)
 
 const handleAddPrize = () => {
   if (newPrizeName.value.trim()) {
@@ -125,6 +130,12 @@ const handleUpdatePrize = () => {
     editDialog.value = false
   }
 }
+
+const handleResetWinners = () => {
+  if (confirm('確定要重置所有獎項的中獎狀態嗎？這不會清除中獎紀錄。')) {
+    prizeStore.resetWinners()
+  }
+}
 </script>
 
 <style lang="stylus" scoped>
@@ -156,4 +167,7 @@ const handleUpdatePrize = () => {
     td
       border-bottom 1px solid #fcd34d !important
       color #92400e !important
+
+  tbody tr.won-row
+    background-color rgba(255, 0, 0, 0.05) !important
 </style>

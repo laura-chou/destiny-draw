@@ -3,6 +3,7 @@ import { defineStore } from 'pinia'
 export interface Prize {
   id: string
   name: string
+  isWon?: boolean
 }
 
 export interface WinRecord {
@@ -17,11 +18,20 @@ export const usePrizeStore = defineStore('prizes', {
     history: JSON.parse(sessionStorage.getItem('winHistory') || '[]') as WinRecord[],
     excludeWinners: JSON.parse(sessionStorage.getItem('excludeWinners') || 'false') as boolean
   }),
+  getters: {
+    availablePrizes: (state) => {
+      if (state.excludeWinners) {
+        return state.prizes.filter(p => !p.isWon)
+      }
+      return state.prizes
+    }
+  },
   actions: {
     addPrize(name: string) {
       const newPrize: Prize = {
         id: Date.now().toString(),
-        name
+        name,
+        isWon: false
       }
       this.prizes.push(newPrize)
       this.saveToSession()
@@ -52,17 +62,24 @@ export const usePrizeStore = defineStore('prizes', {
       }
       this.history.unshift(record)
 
-      if (this.excludeWinners) {
-        if (prizeId) {
-          this.deletePrize(prizeId)
-        } else {
-          const prizeIndex = this.prizes.findIndex(p => p.name === prizeName)
-          if (prizeIndex !== -1) {
-            this.prizes.splice(prizeIndex, 1)
-          }
+      if (prizeId) {
+        const prize = this.prizes.find(p => p.id === prizeId)
+        if (prize) {
+          prize.isWon = true
+        }
+      } else {
+        const prize = this.prizes.find(p => p.name === prizeName && !p.isWon)
+        if (prize) {
+          prize.isWon = true
         }
       }
 
+      this.saveToSession()
+    },
+    resetWinners() {
+      this.prizes.forEach(p => {
+        p.isWon = false
+      })
       this.saveToSession()
     },
     clearHistory() {

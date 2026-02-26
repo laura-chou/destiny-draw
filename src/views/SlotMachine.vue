@@ -37,14 +37,16 @@ v-container.py-4.d-flex.flex-column.align-center.justify-center(style="min-heigh
           size="large"
           rounded="pill"
           width="160"
-          @click="showResult = false"
+          @click="confirmResult"
         ) 確定
 </template>
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { usePrizeStore } from '@/store/prizes'
 
+const router = useRouter()
 const prizeStore = usePrizeStore()
 const myLucky = ref()
 const showResult = ref(false)
@@ -77,7 +79,7 @@ const defaultStyle = {
 }
 
 const prizes = computed(() => {
-  const storePrizes = prizeStore.prizes
+  const storePrizes = prizeStore.availablePrizes
   const luckyPrizes = []
 
   const count = Math.max(storePrizes.length, 6)
@@ -114,6 +116,13 @@ const endCallback = (prize: any) => {
   resultPrizeName.value = firstPrize.fonts[0].text
   showResult.value = true
   prizeStore.recordWin(resultPrizeName.value, firstPrize.id)
+}
+
+const confirmResult = () => {
+  showResult.value = false
+  if (prizeStore.availablePrizes.length < 2) {
+    router.push('/settings')
+  }
 }
 </script>
 

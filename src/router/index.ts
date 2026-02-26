@@ -43,7 +43,8 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   const prizeStore = usePrizeStore()
-  if (to.path !== '/settings' && prizeStore.prizes.length < 2) {
+  const allowedRoutes = ['/settings', '/history']
+  if (!allowedRoutes.includes(to.path) && prizeStore.availablePrizes.length < 2) {
     next({ name: 'settings' })
   } else {
     next()
