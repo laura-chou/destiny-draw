@@ -14,10 +14,8 @@ v-container
   v-row(align="center")
     v-col(cols="12" md="6")
       v-text-field(v-model="newPrizeName" label="輸入獎項名稱" hide-details variant="solo" @keyup.enter="handleAddPrize" prepend-inner-icon="mdi-gift")
-    v-col(cols="12" md="3")
+    v-col(cols="12" md="6")
       v-btn(color="amber-darken-2" block size="large" @click="handleAddPrize" prepend-icon="mdi-plus") 新增獎項
-    v-col(cols="12" md="3")
-      v-btn(color="blue-grey-darken-3" block size="large" @click="handleResetWinners" prepend-icon="mdi-refresh") 重置獎池
 
   v-card(v-if="availablePrizes.length < 2" flat class="my-6 rounded-lg overflow-hidden")
     div.red-banner.d-flex.align-center.justify-center.pa-4
@@ -34,15 +32,17 @@ v-container
         tr
           th.text-center(style="width: 50px")
             v-checkbox-btn(v-model="selectAll" @change="toggleSelectAll" color="amber-darken-4")
+          th.text-center(style="width: 80px") 顯示
           th.text-left 名稱
           th.text-center(style="width: 120px") 操作
       tbody
-        tr(v-for="prize in prizes" :key="prize.id" :class="{ 'won-row': prize.isWon }")
+        tr(v-for="prize in prizes" :key="prize.id" :class="{ 'inactive-row': !prize.isActive }")
           td.text-center
             v-checkbox-btn(v-model="selectedPrizes" :value="prize.id" color="amber-darken-4")
+          td.text-center
+            v-checkbox-btn(:model-value="prize.isActive" @update:model-value="val => prizeStore.togglePrizeActive(prize.id, val)" color="success")
           td.text-left
-            span(:class="{ 'text-decoration-line-through text-red-darken-4': prize.isWon }") {{ prize.name }}
-            v-chip.ml-2(v-if="prize.isWon" size="x-small" color="red-darken-4" variant="flat") 已中獎
+            span(:class="{ 'text-decoration-line-through text-grey': !prize.isActive }") {{ prize.name }}
           td.text-center
             div.d-flex.justify-center
               v-btn(icon="mdi-pencil" variant="text" color="blue-darken-2" size="small" @click="openEditDialog(prize)")
@@ -130,12 +130,6 @@ const handleUpdatePrize = () => {
     editDialog.value = false
   }
 }
-
-const handleResetWinners = () => {
-  if (confirm('確定要重置所有獎項的中獎狀態嗎？這不會清除中獎紀錄。')) {
-    prizeStore.resetWinners()
-  }
-}
 </script>
 
 <style lang="stylus" scoped>
@@ -168,6 +162,6 @@ const handleResetWinners = () => {
       border-bottom 1px solid #fcd34d !important
       color #92400e !important
 
-  tbody tr.won-row
-    background-color rgba(255, 0, 0, 0.05) !important
+  tbody tr.inactive-row
+    background-color rgba(0, 0, 0, 0.05) !important
 </style>

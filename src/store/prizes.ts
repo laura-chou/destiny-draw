@@ -3,7 +3,7 @@ import { defineStore } from 'pinia'
 export interface Prize {
   id: string
   name: string
-  isWon?: boolean
+  isActive: boolean
 }
 
 export interface WinRecord {
@@ -13,17 +13,23 @@ export interface WinRecord {
 }
 
 export const usePrizeStore = defineStore('prizes', {
-  state: () => ({
-    prizes: JSON.parse(sessionStorage.getItem('prizes') || '[]') as Prize[],
-    history: JSON.parse(sessionStorage.getItem('winHistory') || '[]') as WinRecord[],
-    excludeWinners: JSON.parse(sessionStorage.getItem('excludeWinners') || 'false') as boolean
-  }),
+  state: () => {
+    const rawPrizes = JSON.parse(sessionStorage.getItem('prizes') || '[]') as any[]
+    const prizes = rawPrizes.map(p => ({
+      id: p.id,
+      name: p.name,
+      isActive: p.isActive !== undefined ? p.isActive : (p.isWon !== undefined ? !p.isWon : true)
+    })) as Prize[]
+
+    return {
+      prizes,
+      history: JSON.parse(sessionStorage.getItem('winHistory') || '[]') as WinRecord[],
+      excludeWinners: JSON.parse(sessionStorage.getItem('excludeWinners') || 'false') as boolean
+    }
+  },
   getters: {
     availablePrizes: (state) => {
-      if (state.excludeWinners) {
-        return state.prizes.filter(p => !p.isWon)
-      }
-      return state.prizes
+      return state.prizes.filter(p => p.isActive)
     }
   },
   actions: {
@@ -31,7 +37,7 @@ export const usePrizeStore = defineStore('prizes', {
       const newPrize: Prize = {
         id: Date.now().toString(),
         name,
-        isWon: false
+        isActive: true
       }
       this.prizes.push(newPrize)
       this.saveToSession()
@@ -62,25 +68,28 @@ export const usePrizeStore = defineStore('prizes', {
       }
       this.history.unshift(record)
 
-      if (prizeId) {
-        const prize = this.prizes.find(p => p.id === prizeId)
-        if (prize) {
-          prize.isWon = true
-        }
-      } else {
-        const prize = this.prizes.find(p => p.name === prizeName && !p.isWon)
-        if (prize) {
-          prize.isWon = true
+      if (this.excludeWinners) {
+        if (prizeId) {
+          const prize = this.prizes.find(p => p.id === prizeId)
+          if (prize) {
+            prize.isActive = false
+          }
+        } else {
+          const prize = this.prizes.find(p => p.name === prizeName && p.isActive)
+          if (prize) {
+            prize.isActive = false
+          }
         }
       }
 
       this.saveToSession()
     },
-    resetWinners() {
-      this.prizes.forEach(p => {
-        p.isWon = false
-      })
-      this.saveToSession()
+    togglePrizeActive(id: string, value: boolean) {
+      const prize = this.prizes.find(p => p.id === id)
+      if (prize) {
+        prize.isActive = value
+        this.saveToSession()
+      }
     },
     clearHistory() {
       this.history = []
