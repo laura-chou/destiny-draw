@@ -32,7 +32,10 @@ v-container
         tr
           th.text-center(style="width: 50px")
             v-checkbox-btn(v-model="selectAll" @change="toggleSelectAll" color="amber-darken-4")
-          th.text-center(style="width: 80px") 顯示
+          th.text-center(style="width: 80px")
+            div.d-flex.flex-column.align-center
+              span.text-caption 顯示
+              v-checkbox-btn(v-model="allActive" color="success" density="compact")
           th.text-left 名稱
           th.text-center(style="width: 120px") 操作
       tbody
@@ -75,6 +78,11 @@ const excludeWinners = computed({
 
 const prizes = computed(() => prizeStore.prizes)
 const availablePrizes = computed(() => prizeStore.availablePrizes)
+
+const allActive = computed({
+  get: () => prizes.value.length > 0 && prizes.value.every(p => p.isActive),
+  set: (val) => prizeStore.setAllPrizesActive(!!val)
+})
 
 const handleAddPrize = () => {
   if (newPrizeName.value.trim()) {

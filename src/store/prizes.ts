@@ -49,6 +49,12 @@ export const usePrizeStore = defineStore('prizes', {
         this.saveToSession()
       }
     },
+    setAllPrizesActive(value: boolean) {
+      this.prizes.forEach(p => {
+        p.isActive = value
+      })
+      this.saveToSession()
+    },
     deletePrize(id: string) {
       this.prizes = this.prizes.filter(p => p.id !== id)
       this.saveToSession()
