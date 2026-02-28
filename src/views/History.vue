@@ -1,7 +1,6 @@
 <template lang="pug">
-v-container
-  div.d-flex.align-center.justify-space-between.mb-4
-    h2.text-h5.text-sm-h4.text-amber-lighten-4.page-title 中獎紀錄
+v-container.pa-0
+  div.d-flex.align-center.justify-end.mb-4
     v-btn(
       v-if="history.length > 0"
       color="red-darken-2"
@@ -14,12 +13,12 @@ v-container
     v-table.prize-table
       thead
         tr
-          th.text-center(style="width: 80px") 次數
+          th.text-center(style="width: 90px") 次數
           th.text-center 獎項
           th.text-center 時間
       tbody
         tr(v-for="(record, index) in history" :key="record.id")
-          td.text-center.text-body-2 第 {{ history.length - index }} 次
+          td.text-center.text-body-2 {{ history.length - index }}
           td.text-center.font-weight-bold {{ record.prizeName }}
           td.text-center.text-caption {{ record.time }}
         tr(v-if="history.length === 0")
@@ -43,15 +42,15 @@ const handleClearHistory = () => {
 </script>
 
 <style lang="stylus" scoped>
-.page-title
-  text-shadow 0 0 10px rgba(255, 236, 179, 0.4)
-
 .prize-table-card
   background-color #334155
 
 .prize-table
   background-color #334155 !important
 
+  :deep(table)
+    table-layout fixed
+  
   thead
     background-color #1e293b
 

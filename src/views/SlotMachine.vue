@@ -1,7 +1,5 @@
 <template lang="pug">
-v-container.py-4.d-flex.flex-column.align-center.justify-center(style="min-height: calc(100vh - 64px)")
-  h2.mb-4.text-h5.text-sm-h4.font-weight-bold.text-purple-accent-2.game-title 幸運老虎機
-
+v-container.d-flex.flex-column.align-center.justify-center.pa-0
   v-card.mx-auto.pa-4.pa-sm-6.slot-outer-card(elevation="20" rounded="xl" :max-width="cardWidth")
     div.lucky-slot-wrapper
       SlotMachine(
@@ -23,11 +21,11 @@ v-container.py-4.d-flex.flex-column.align-center.justify-center(style="min-heigh
       block
       rounded="pill"
       class="play-btn text-white font-weight-black"
-    ) {{ spinning ? '拉霸中...' : '拉霸！' }}
+    ) {{ spinning ? '請稍後...' : '拉霸' }}
 
   v-dialog(v-model="showResult" max-width="320" persistent)
     v-card.rounded-xl.pa-4.result-card
-      v-card-title.text-center.text-h5.font-weight-bold.text-purple-accent-1 中獎了！
+      v-card-title.text-center.text-h5.font-weight-bold.text-purple-accent-1 恭喜
       v-card-text.text-center.py-6
         div.text-h4.font-weight-black.text-white {{ resultPrizeName }}
       v-card-actions.justify-center
@@ -55,17 +53,17 @@ const spinning = ref(false)
 
 const cardWidth = computed(() => {
   if (typeof window !== 'undefined') {
-    return Math.min(window.innerWidth - 16, 400)
+    return Math.min(window.innerWidth - 65, 400)
   }
   return 400
 })
 
 const gridSize = computed(() => {
   if (typeof window !== 'undefined') {
-    const side = Math.min(window.innerWidth - 80, 300)
+    const side = Math.min(window.innerWidth - 120, 300)
     return side + 'px'
   }
-  return '300px'
+  return '270px'
 })
 
 const blocks = [
@@ -127,10 +125,6 @@ const confirmResult = () => {
 </script>
 
 <style lang="stylus" scoped>
-.game-title
-  text-shadow 2px 2px 4px rgba(0,0,0,0.5), 0 0 20px #e040fb
-  letter-spacing 4px
-
 .slot-outer-card
   background radial-gradient(circle, #311b92 0%, #1a237e 100%)
   border 4px solid #e040fb
@@ -153,7 +147,4 @@ const confirmResult = () => {
 .result-card
   background #311b92
   border 3px solid #e040fb
-
-  .v-card-title
-    text-shadow 0 0 10px #e040fb
 </style>

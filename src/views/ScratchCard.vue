@@ -1,7 +1,5 @@
 <template lang="pug">
-v-container.py-4.d-flex.flex-column.align-center.justify-center(style="min-height: calc(100vh - 64px)")
-  h2.mb-4.text-h5.text-sm-h4.font-weight-bold.text-deep-orange-darken-3.scratch-title 刮刮樂
-
+v-container.d-flex.flex-column.align-center.justify-center.pa-0
   v-card.mx-auto.pa-4.pa-sm-6.scratch-outer-card(elevation="10" rounded="xl" :max-width="cardWidth")
     div.scratch-container.mb-4.mb-sm-6
       CustomScratchCard(
@@ -27,7 +25,7 @@ v-container.py-4.d-flex.flex-column.align-center.justify-center(style="min-heigh
 
   v-dialog(v-model="showResult" max-width="320" persistent)
     v-card.rounded-xl.pa-4
-      v-card-title.text-center.text-h5.font-weight-bold.text-deep-orange 恭喜中獎！
+      v-card-title.text-center.text-h5.font-weight-bold.text-deep-orange 恭喜
       v-card-text.text-center.py-6
         div.text-h4.font-weight-black.text-grey-darken-3 {{ currentPrize?.name }}
       v-card-actions.justify-center
@@ -57,13 +55,13 @@ const scratchCardRef = ref(null)
 
 const cardWidth = computed(() => {
   if (typeof window !== 'undefined') {
-    return Math.min(window.innerWidth - 16, 400)
+    return Math.min(window.innerWidth - 65, 400)
   }
   return 400
 })
 
 const scratchWidth = computed(() => {
-  return cardWidth.value - (window.innerWidth < 600 ? 32 : 48)
+  return cardWidth.value - (window.innerWidth < 600 ? 45 : 60)
 })
 
 const pickRandomPrize = () => {
@@ -102,9 +100,6 @@ onMounted(() => {
 </script>
 
 <style lang="stylus" scoped>
-.scratch-title
-  text-shadow 0 0 10px rgba(255, 87, 34, 0.5)
-
 .scratch-outer-card
   background linear-gradient(135deg, #ff9800 0%, #ff5722 100%)
   border 4px solid #fff3e0

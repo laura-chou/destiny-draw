@@ -1,27 +1,23 @@
 <template lang="pug">
-v-container.py-4.d-flex.flex-column.align-center.justify-center(style="min-height: calc(100vh - 64px)")
-  h2.mb-4.text-h5.text-sm-h4.font-weight-bold.text-amber-accent-4.game-title 幸運大轉盤
+v-container.d-flex.flex-column.align-center.justify-center.pa-0
+  div.wheel-wrapper
+    FortuneWheel(
+      :key="wheelData.length"
+      ref="wheel"
+      v-model="winningId"
+      :data="wheelData"
+      @done="onDone"
+    )
 
-  v-card.mx-auto.pa-4.pa-sm-6.wheel-outer-card(elevation="20" rounded="xl" :max-width="cardWidth")
-    div.wheel-wrapper
-      FortuneWheel(
-        :key="wheelData.length"
-        ref="wheel"
-        v-model="winningId"
-        :data="wheelData"
-        :canvas="canvasOptions"
-        @done="onDone"
-      )
-
+  div.text-center
     v-btn.mt-4.mt-sm-8(
       color="amber-accent-4"
       size="x-large"
       @click="launchWheel"
       :disabled="spinning"
-      block
       rounded="pill"
       class="play-btn text-black font-weight-black"
-    ) {{ spinning ? '旋轉中...' : '開始旋轉' }}
+    ) {{ spinning ? '請稍後...' : '開始' }}
 
   v-dialog(v-model="showResult" max-width="320" persistent)
     v-card.rounded-xl.pa-4.result-card
@@ -83,33 +79,6 @@ const wheelData = computed(() => {
   return data
 })
 
-const cardWidth = computed(() => {
-  if (typeof window !== 'undefined') {
-    return Math.min(window.innerWidth - 16, 500)
-  }
-  return 500
-})
-
-const canvasOptions = computed(() => {
-  const ww = typeof window !== 'undefined' ? window.innerWidth : 500
-  const containerWidth = Math.min(ww - 60, 460)
-  const radius = Math.floor(containerWidth / 2) - 5
-
-  const count = wheelData.value.length
-  let fontSize = 22
-  if (count > 15) fontSize = 12
-  else if (count > 10) fontSize = 16
-  else if (count > 8) fontSize = 18
-
-  return {
-    radius: Math.min(radius, 170),
-    textDirection: 'horizontal',
-    fontSize: fontSize,
-    borderWidth: 6,
-    borderColor: '#ffc107'
-  }
-})
-
 const launchWheel = () => {
   if (wheelData.value.length === 0) return
 
@@ -138,22 +107,19 @@ const confirmResult = () => {
 </script>
 
 <style lang="stylus" scoped>
-.game-title
-  text-shadow 2px 2px 4px rgba(0,0,0,0.5), 0 0 20px #ffc107
-  letter-spacing 4px
-
-.wheel-outer-card
-  background radial-gradient(circle, #263238 0%, #102027 100%)
-  border 4px solid #ffc107
-  box-shadow 0 0 30px rgba(255, 193, 7, 0.3)
-
 .wheel-wrapper
-  display flex
-  justify-content center
-  padding 10px
+  :deep(#wheel)
+    height 500px !important
+
+  :deep(circle:first-of-type)
+    r 50
+
+  :deep(textPath)
+    font-size 24px
 
 .play-btn
   border 2px solid #fff
+  width 300px
   transition all 0.3s ease
   &:hover:not(:disabled)
     transform scale(1.05)
@@ -163,6 +129,8 @@ const confirmResult = () => {
   background #1a237e
   border 3px solid #ffc107
 
-  .v-card-title
-    text-shadow 0 0 10px #ffeb3b
+@media screen and (max-width: 400px)
+  .wheel-wrapper
+    :deep(#wheel)
+      width 380px !important
 </style>

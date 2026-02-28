@@ -54,4 +54,7 @@ body
 
 .active-item
   color #ffc107 !important
+
+.v-container
+  height 100%
 </style>

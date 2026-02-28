@@ -1,42 +1,42 @@
 <template lang="pug">
-v-container
+v-container.pa-0
   v-row
     v-col(cols="12")
-      v-card.mb-6.pa-4.exclude-card(variant="elevated" color="amber-lighten-4")
+      v-card.pa-4.exclude-card(variant="elevated" color="amber-lighten-4")
         div.d-flex.align-center.justify-space-between
           div.d-flex.align-center
-            v-icon(color="orange-darken-4" size="large") mdi-account-remove
+            v-icon(color="orange-darken-4" size="large") mdi-filter-variant-remove
             div.ml-4
               div.text-h6.font-weight-bold.text-orange-darken-4 排除中獎模式
               div.text-caption.text-orange-darken-2 開啟後，已中獎的獎項將自動從獎池中移除
           v-switch(v-model="excludeWinners" color="orange-darken-3" hide-details inset)
 
   v-row(align="center")
-    v-col(cols="12" md="6")
+    v-col(cols="9" sm="10" md="11")
       v-text-field(v-model="newPrizeName" label="輸入獎項名稱" hide-details variant="solo" @keyup.enter="handleAddPrize" prepend-inner-icon="mdi-gift")
-    v-col(cols="12" md="6")
-      v-btn(color="amber-darken-2" block size="large" @click="handleAddPrize" prepend-icon="mdi-plus") 新增獎項
+    v-col(cols="3" sm="2" md="1")
+      v-btn(color="amber-darken-2" @click="handleAddPrize" icon="mdi-plus")
 
   v-card(v-if="availablePrizes.length < 2" flat class="my-6 rounded-lg overflow-hidden")
     div.red-banner.d-flex.align-center.justify-center.pa-4
       v-icon(color="white" class="mr-2") mdi-alert-circle
-      span.text-white.font-weight-bold 請先輸入至少兩個獎項以開啟抽獎功能
+      span.text-white.font-weight-bold 至少輸入兩個獎項以開啟抽獎功能
 
   div.d-flex.flex-column.flex-sm-row.align-sm-center.justify-space-between.my-4(v-if="prizes.length > 0")
     div.text-h6.text-amber-lighten-3.mb-2.mb-sm-0 獎項列表 ({{ prizes.length }}，剩餘 {{ availablePrizes.length }} 可抽)
-    v-btn(v-if="selectedPrizes.length > 0" color="red-darken-2" prepend-icon="mdi-delete" @click="handleDeleteSelected") 刪除所選 ({{ selectedPrizes.length }})
+    v-btn(v-if="selectedPrizes.length > 0" color="red-darken-2" prepend-icon="mdi-delete" @click="handleDeleteSelected") 刪除 ({{ selectedPrizes.length }})
 
   v-card(v-if="prizes.length > 0" flat class="prize-table-card rounded-lg overflow-hidden mb-8")
     v-table.prize-table
       thead
         tr
-          th.text-center(style="width: 50px")
+          th.text-center(style="width: 40px")
             v-checkbox-btn(v-model="selectAll" @change="toggleSelectAll" color="amber-darken-4")
-          th.text-center(style="width: 80px")
-            div.d-flex.flex-column.align-center
-              span.text-caption 顯示
+          th.text-center(style="width: 100px")
+            div.d-flex.align-center.flex-column
+              span 顯示
               v-checkbox-btn(v-model="allActive" color="success" density="compact")
-          th.text-left 名稱
+          th.text-center 名稱
           th.text-center(style="width: 120px") 操作
       tbody
         tr(v-for="prize in prizes" :key="prize.id" :class="{ 'inactive-row': !prize.isActive }")
@@ -44,7 +44,7 @@ v-container
             v-checkbox-btn(v-model="selectedPrizes" :value="prize.id" color="amber-darken-4")
           td.text-center
             v-checkbox-btn(:model-value="prize.isActive" @update:model-value="val => prizeStore.togglePrizeActive(prize.id, val)" color="success")
-          td.text-left
+          td.text-center
             span(:class="{ 'text-decoration-line-through text-grey': !prize.isActive }") {{ prize.name }}
           td.text-center
             div.d-flex.justify-center
@@ -155,6 +155,9 @@ const handleUpdatePrize = () => {
 .prize-table
   background-color #fef3c7 !important
 
+  :deep(table)
+    table-layout fixed
+
   thead
     background-color #fbbf24
 
@@ -163,13 +166,19 @@ const handleUpdatePrize = () => {
       font-size 1.1rem !important
       color #78350f !important
 
-  tbody tr
-    background-color transparent !important
+      :deep(.v-selection-control__wrapper)
+        width 100%
 
-    td
-      border-bottom 1px solid #fcd34d !important
-      color #92400e !important
+  tbody
+    tr
+      td
+        border-bottom 1px solid #fcd34d !important
+        color #92400e !important
 
-  tbody tr.inactive-row
-    background-color rgba(0, 0, 0, 0.05) !important
+      .inactive-row
+        background-color rgba(0, 0, 0, 0.05) !important
+
+      :deep(.v-selection-control)
+        display flex
+        justify-content center
 </style>

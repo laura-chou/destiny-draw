@@ -1,7 +1,5 @@
 <template lang="pug">
-v-container.py-4.d-flex.flex-column.align-center.justify-center(style="min-height: calc(100vh - 64px)")
-  h2.mb-4.text-h5.text-sm-h4.font-weight-bold.text-cyan-accent-3.game-title 幸運九宮格
-
+v-container.d-flex.flex-column.align-center.justify-center.pa-0
   v-card.mx-auto.pa-4.pa-sm-6.grid-outer-card(elevation="20" rounded="xl" :max-width="cardWidth")
     div.lucky-grid-wrapper
       LuckyGrid(
@@ -18,7 +16,7 @@ v-container.py-4.d-flex.flex-column.align-center.justify-center(style="min-heigh
 
   v-dialog(v-model="showResult" max-width="320" persistent)
     v-card.rounded-xl.pa-4.result-card
-      v-card-title.text-center.text-h5.font-weight-bold.text-cyan-accent-2 中獎了！
+      v-card-title.text-center.text-h5.font-weight-bold.text-cyan-accent-2 恭喜
       v-card-text.text-center.py-6
         div.text-h4.font-weight-black.text-white {{ resultPrizeName }}
       v-card-actions.justify-center
@@ -46,17 +44,17 @@ const resultPrizeName = ref('')
 
 const cardWidth = computed(() => {
   if (typeof window !== 'undefined') {
-    return Math.min(window.innerWidth - 16, 400)
+    return Math.min(window.innerWidth - 65, 400)
   }
   return 400
 })
 
 const gridSize = computed(() => {
   if (typeof window !== 'undefined') {
-    const side = Math.min(window.innerWidth - 80, 300)
+    const side = Math.min(window.innerWidth - 120, 300)
     return side + 'px'
   }
-  return '300px'
+  return '270px'
 })
 
 const blocks = [
@@ -124,10 +122,6 @@ const confirmResult = () => {
 </script>
 
 <style lang="stylus" scoped>
-.game-title
-  text-shadow 2px 2px 4px rgba(0,0,0,0.5), 0 0 20px #00e5ff
-  letter-spacing 4px
-
 .grid-outer-card
   background radial-gradient(circle, #004d40 0%, #00241a 100%)
   border 4px solid #00e5ff
@@ -143,7 +137,4 @@ const confirmResult = () => {
 .result-card
   background #004d40
   border 3px solid #00e5ff
-
-  .v-card-title
-    text-shadow 0 0 10px #00e5ff
 </style>
