@@ -56,7 +56,13 @@ const colors = [
   { bgColor: '#fbc02d', color: '#000000' }, // Gold
   { bgColor: '#388e3c', color: '#ffffff' }, // Green
   { bgColor: '#7b1fa2', color: '#ffffff' }, // Purple
-  { bgColor: '#e65100', color: '#ffffff' }  // Orange
+  { bgColor: '#e65100', color: '#ffffff' }, // Orange
+  { bgColor: '#00838f', color: '#ffffff' }, // Teal
+  { bgColor: '#5d4037', color: '#ffffff' }, // Brown
+  { bgColor: '#455a64', color: '#ffffff' }, // Blue Grey
+  { bgColor: '#c2185b', color: '#ffffff' }, // Pink
+  { bgColor: '#303f9f', color: '#ffffff' }, // Indigo
+  { bgColor: '#afb42b', color: '#000000' }  // Lime
 ]
 
 const wheelData = computed(() => {
@@ -64,11 +70,10 @@ const wheelData = computed(() => {
   if (storePrizes.length === 0) return []
 
   const data = []
-  const displayCount = storePrizes.length < 6 ? storePrizes.length * 2 : storePrizes.length
-
-  for (let i = 0; i < displayCount; i++) {
+  for (let i = 0; i < storePrizes.length; i++) {
     const p = storePrizes[i % storePrizes.length]
-    const colorSet = colors[i % colors.length]
+    const offset = i >= colors.length ? 1 : 0
+    const colorSet = colors[(i + offset) % colors.length]
     data.push({
       id: i + 1,
       value: p.name,
