@@ -37,13 +37,18 @@ const router = createRouter({
       path: '/wheel',
       name: 'wheel',
       component: () => import('@/views/Wheel.vue')
+    },
+    {
+      path: '/grouping',
+      name: 'grouping',
+      component: () => import('@/views/RandomGrouping.vue')
     }
   ]
 })
 
 router.beforeEach((to, from, next) => {
   const prizeStore = usePrizeStore()
-  const allowedRoutes = ['/settings', '/history']
+  const allowedRoutes = ['/settings', '/history', '/grouping']
   if (!allowedRoutes.includes(to.path) && prizeStore.availablePrizes.length < 2) {
     next({ name: 'settings' })
   } else {
