@@ -3,12 +3,12 @@ v-app
   v-navigation-drawer(v-model="drawer" app class="nav-drawer" temporary)
     v-list(nav)
       v-list-item(prepend-icon="mdi-ferris-wheel" title="轉盤" to="/wheel" active-class="active-item")
-      v-list-item(prepend-icon="mdi-account-group" title="隨機分組" to="/grouping" active-class="active-item")
       v-list-item(prepend-icon="mdi-grid" title="九宮格" to="/grid" active-class="active-item")
       v-list-item(prepend-icon="mdi-slot-machine" title="老虎機" to="/slot" active-class="active-item")
       v-list-item(prepend-icon="mdi-format-paint" title="刮刮樂" to="/scratch" active-class="active-item")
       v-list-item(prepend-icon="mdi-star-circle-outline" title="中獎紀錄" to="/history" active-class="active-item")
       v-list-item(prepend-icon="mdi-cog" title="設定" to="/settings" active-class="active-item")
+      v-list-item(prepend-icon="mdi-account-group" title="隨機分組" to="/grouping" active-class="active-item")
 
   v-app-bar(app color="#1a237e" density="compact" flat class="app-bar")
     v-app-bar-nav-icon(color="amber-accent-4" @click="drawer = !drawer")
