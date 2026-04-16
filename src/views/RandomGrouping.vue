@@ -11,12 +11,13 @@ v-container.pa-4
 
         v-textarea(
           v-model="inputNames"
-          label="人員名單 (請以逗號分隔)"
+          :label="\`人員名單 (目前 \${namesCount} 人，請以逗號分隔)\`"
           placeholder="例如: A, B, C, D, E"
           variant="solo"
           rows="4"
           bg-color="white"
           class="mb-4"
+          persistent-placeholder
           @update:model-value="groupingStore.setNames"
         )
 
@@ -85,8 +86,16 @@ const inputNames = ref(groupingStore.names)
 const groupSize = ref(groupingStore.groupSize)
 const groups = ref<string[][]>([])
 
+const namesCount = computed(() => {
+  return inputNames.value
+    .split(/[,,，]/)
+    .map(n => n.trim())
+    .filter(n => n !== '')
+    .length
+})
+
 const hasEnoughNames = computed(() => {
-  return inputNames.value.split(/[,,，]/).filter(n => n.trim()).length >= 1
+  return namesCount.value >= 1
 })
 
 const handleGrouping = () => {
