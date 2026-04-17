@@ -3,11 +3,19 @@ v-container.pa-4
   v-row
     v-col(cols="12")
       v-card.pa-4.grouping-card(variant="elevated" color="amber-lighten-4")
-        div.d-flex.align-center.mb-4
-          v-icon(color="orange-darken-4" size="large") mdi-account-group
-          div.ml-4
-            div.text-h6.font-weight-bold.text-orange-darken-4 隨機分組設定
-            div.text-caption.text-orange-darken-2 輸入名單並設定每組人數，系統將自動隨機分配
+        div.d-flex.align-center.justify-space-between.mb-4
+          div.d-flex.align-center
+            v-icon(color="orange-darken-4" size="large") mdi-account-group
+            div.ml-4
+              div.text-h6.font-weight-bold.text-orange-darken-4 隨機分組設定
+              div.text-caption.text-orange-darken-2 輸入名單並設定每組人數，系統將自動隨機分配
+          v-btn(
+            v-if="inputNames"
+            variant="text"
+            color="red-darken-2"
+            prepend-icon="mdi-delete-sweep"
+            @click="handleClearNames"
+          ) 清除內容
 
         v-textarea(
           v-model="inputNames"
@@ -85,6 +93,14 @@ const groupingStore = useGroupingStore()
 const inputNames = ref(groupingStore.names)
 const groupSize = ref(groupingStore.groupSize)
 const groups = ref<string[][]>([])
+
+const handleClearNames = () => {
+  if (confirm('確定要清除所有人員名單嗎？')) {
+    inputNames.value = ''
+    groupingStore.setNames('')
+    groups.value = []
+  }
+}
 
 const namesCount = computed(() => {
   return inputNames.value
