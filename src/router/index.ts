@@ -42,13 +42,18 @@ const router = createRouter({
       path: '/grouping',
       name: 'grouping',
       component: () => import('@/views/RandomGrouping.vue')
+    },
+    {
+      path: '/grouping-settings',
+      name: 'grouping-settings',
+      component: () => import('@/views/GroupingSettings.vue')
     }
   ]
 })
 
 router.beforeEach((to, from, next) => {
   const prizeStore = usePrizeStore()
-  const allowedRoutes = ['/settings', '/history', '/grouping']
+  const allowedRoutes = ['/settings', '/history', '/grouping', '/grouping-settings']
   if (!allowedRoutes.includes(to.path) && prizeStore.availablePrizes.length < 2) {
     next({ name: 'settings' })
   } else {
