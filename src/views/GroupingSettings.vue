@@ -91,39 +91,39 @@ v-container.pa-4
                 @click="groupingStore.addTask"
               ) 新增任務
 
-            v-list(bg-color="transparent" class="pa-0")
-              v-list-item(
-                v-for="task in groupingStore.tasks"
-                :key="task.id"
-                class="px-0 mb-2"
-              )
-                v-row(dense align="center")
-                  v-col(cols="6")
+            v-table.task-table.mb-4(v-if="groupingStore.tasks.length > 0")
+              thead
+                tr
+                  th.text-left 任務名稱
+                  th.text-left 名額
+                  th.text-center 操作
+              tbody
+                tr(v-for="task in groupingStore.tasks" :key="task.id")
+                  td
                     v-text-field(
                       :model-value="task.name"
-                      label="任務名稱"
                       placeholder="例如: 打掃"
-                      variant="solo"
-                      bg-color="white"
+                      variant="underlined"
+                      density="compact"
                       hide-details
                       @update:model-value="(v) => groupingStore.updateTask(task.id, { name: v })"
                     )
-                  v-col(cols="4")
+                  td(style="width: 120px")
                     v-text-field(
                       :model-value="task.count"
                       type="number"
-                      label="名額"
                       min="1"
-                      variant="solo"
-                      bg-color="white"
+                      variant="underlined"
+                      density="compact"
                       hide-details
                       @update:model-value="(v) => groupingStore.updateTask(task.id, { count: parseInt(v) || 1 })"
                     )
-                  v-col(cols="2")
+                  td.text-center
                     v-btn(
                       icon="mdi-delete"
                       variant="text"
                       color="red-darken-2"
+                      size="small"
                       @click="groupingStore.removeTask(task.id)"
                     )
 
@@ -168,9 +168,16 @@ const handleClearNames = () => {
 .grouping-settings-card
   border-left 8px solid #ff6f00 !important
 
-.v-list-item
-  background-color rgba(255, 255, 255, 0.4)
+.task-table
+  background-color rgba(255, 255, 255, 0.3) !important
   border-radius 8px
-  border 1px dashed #fbbf24
-  margin-bottom 8px
+  overflow hidden
+
+  :deep(th)
+    background-color rgba(255, 111, 0, 0.1) !important
+    color #ff6f00 !important
+    font-weight bold !important
+
+  :deep(td)
+    border-bottom 1px solid rgba(255, 111, 0, 0.1) !important
 </style>
