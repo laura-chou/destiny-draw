@@ -63,6 +63,24 @@ v-container.pa-4
         // Task Assignment
         v-expand-transition
           div(v-if="isTaskAssignmentEnabled")
+            v-alert(
+              v-if="groupingStore.tasks.length === 0"
+              type="warning"
+              variant="tonal"
+              color="orange-darken-4"
+              class="mb-4"
+              prepend-icon="mdi-alert"
+            ) 目前尚未新增任何任務，請點擊「新增任務」。
+
+            v-alert(
+              v-if="totalTaskCapacity > namesCount"
+              type="warning"
+              variant="tonal"
+              color="red-darken-4"
+              class="mb-4"
+              prepend-icon="mdi-account-alert"
+            ) 任務總名額 ({{ totalTaskCapacity }}) 超過人員總數 ({{ namesCount }})，部分任務將無人分配。
+
             div.d-flex.align-center.justify-space-between.mb-2
               div.text-subtitle-1.font-weight-bold.text-orange-darken-4 任務清單 (總名額: {{ totalTaskCapacity }})
               v-btn(
@@ -109,13 +127,6 @@ v-container.pa-4
                       @click="groupingStore.removeTask(task.id)"
                     )
 
-            v-alert(
-              v-if="groupingStore.tasks.length === 0"
-              type="info"
-              variant="tonal"
-              color="orange-darken-4"
-              class="mt-2"
-            ) 請點擊右上角「新增任務」開始設定。
 </template>
 
 <script setup lang="ts">

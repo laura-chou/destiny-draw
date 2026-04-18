@@ -14,7 +14,7 @@ v-app
 
       v-list-subheader.text-amber-accent-4.font-weight-bold 分組工具
       v-list-item(prepend-icon="mdi-account-group" title="隨機分組" to="/grouping" active-class="active-item")
-      v-list-item(prepend-icon="mdi-account-cog" title="分組設定" to="/grouping-settings" active-class="active-item")
+      v-list-item(prepend-icon="mdi-account-cog" title="設定" to="/grouping-settings" active-class="active-item")
 
   v-app-bar(app color="#1a237e" density="compact" flat class="app-bar")
     v-app-bar-nav-icon(color="amber-accent-4" @click="drawer = !drawer")

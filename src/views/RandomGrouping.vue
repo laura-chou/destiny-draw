@@ -14,8 +14,30 @@ v-container.pa-4
             size="large"
             prepend-icon="mdi-shuffle-variant"
             @click="handleGrouping"
-            :disabled="!hasEnoughNames"
+              :disabled="isStartDisabled"
           ) 開始隨機分組
+
+  v-expand-transition
+    v-row(v-if="groupingStore.isTaskAssignmentEnabled && groupingStore.tasks.length === 0")
+      v-col(cols="12")
+        v-alert(
+          type="warning"
+          variant="tonal"
+          color="orange-lighten-4"
+          prepend-icon="mdi-alert"
+          class="mb-0"
+        ) 尚未設定任何任務。請至「設定」頁面新增任務。
+
+  v-expand-transition
+    v-row(v-if="groupingStore.isTaskAssignmentEnabled && groupingStore.tasks.length > 0 && totalTaskCapacity > namesCount")
+      v-col(cols="12")
+        v-alert(
+          type="warning"
+          variant="tonal"
+          color="red-lighten-4"
+          prepend-icon="mdi-account-alert"
+          class="mb-0"
+        ) 注意：任務總名額 ({{ totalTaskCapacity }}) 超過目前人數 ({{ namesCount }})。
 
   v-expand-transition
     v-row(v-if="groups.length > 0 || taskResults.length > 0")
@@ -120,8 +142,18 @@ const namesCount = computed(() => {
     .length
 })
 
+const totalTaskCapacity = computed(() => {
+  return groupingStore.tasks.reduce((sum, task) => sum + task.count, 0)
+})
+
 const hasEnoughNames = computed(() => {
   return namesCount.value >= 1
+})
+
+const isStartDisabled = computed(() => {
+  if (!hasEnoughNames.value) return true
+  if (groupingStore.isTaskAssignmentEnabled && groupingStore.tasks.length === 0) return true
+  return false
 })
 
 const handleGrouping = () => {
