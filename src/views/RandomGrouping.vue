@@ -3,7 +3,7 @@ v-container.pa-4
   v-row
     v-col(cols="12")
       v-card.pa-4.grouping-card(variant="elevated" color="amber-lighten-4")
-        div.d-flex.align-center.justify-space-between.mb-4
+        div.d-flex.align-center.justify-space-between
           div.d-flex.align-center
             v-icon(color="orange-darken-4" size="large") mdi-account-group
             div.ml-4
@@ -18,13 +18,22 @@ v-container.pa-4
           ) 開始隨機分組
 
   v-expand-transition
+    v-row(v-if="!hasEnoughNames")
+      v-col(cols="12")
+        v-alert(
+          type="warning"
+          variant="elevated"
+          color="red-darken-2"
+          class="mb-0"
+        ) 尚未設定分組人員。請至「設定」頁面設定。
+
+  v-expand-transition
     v-row(v-if="groupingStore.isTaskAssignmentEnabled && groupingStore.tasks.length === 0")
       v-col(cols="12")
         v-alert(
           type="warning"
-          variant="tonal"
-          color="orange-lighten-4"
-          prepend-icon="mdi-alert"
+          variant="elevated"
+          color="red-darken-2"
           class="mb-0"
         ) 尚未設定任何任務。請至「設定」頁面新增任務。
 
@@ -33,16 +42,15 @@ v-container.pa-4
       v-col(cols="12")
         v-alert(
           type="warning"
-          variant="tonal"
-          color="red-lighten-4"
-          prepend-icon="mdi-account-alert"
+          variant="elevated"
+          color="red-darken-2"
           class="mb-0"
-        ) 注意：任務總名額 ({{ totalTaskCapacity }}) 超過目前人數 ({{ namesCount }})。
+        ) 任務總名額 ({{ totalTaskCapacity }}) 超過目前人數 ({{ namesCount }})。
 
   v-expand-transition
     v-row(v-if="groupingStore.lastGroups.length > 0 || groupingStore.lastTaskResults.length > 0")
       v-col(cols="12")
-        div.d-flex.align-center.justify-space-between.my-4
+        div.d-flex.align-center.justify-space-between.mb-4
           div.text-h6.text-amber-lighten-3 分組結果
           v-btn(
             variant="text"
@@ -63,7 +71,7 @@ v-container.pa-4
             lg="3"
           )
             v-card.result-card.h-100(variant="flat")
-              v-card-title.bg-amber-darken-2.text-white.py-2
+              v-card-title.bg-orange-darken-3.text-white.text-center.py-2
                 span.text-subtitle-1.font-weight-bold 第 {{ index + 1 }} 組
               v-card-text.pa-4
                 v-list(density="compact" bg-color="transparent")
@@ -85,9 +93,8 @@ v-container.pa-4
             lg="3"
           )
             v-card.result-card.h-100(variant="flat")
-              v-card-title.bg-orange-darken-3.text-white.py-2
+              v-card-title.bg-orange-darken-3.text-white.text-center.py-2
                 span.text-subtitle-1.font-weight-bold {{ taskGroup.name }}
-                span.ml-2.text-caption ({{ taskGroup.members.length }}/{{ taskGroup.targetCount }})
               v-card-text.pa-4
                 v-list(density="compact" bg-color="transparent")
                   v-list-item(
@@ -107,7 +114,7 @@ v-container.pa-4
             lg="3"
           )
             v-card.result-card.h-100(variant="flat" border)
-              v-card-title.bg-grey-darken-2.text-white.py-2
+              v-card-title.bg-grey-darken-2.text-white.text-center.py-2
                 span.text-subtitle-1.font-weight-bold 未分配人員
               v-card-text.pa-4
                 v-list(density="compact" bg-color="transparent")

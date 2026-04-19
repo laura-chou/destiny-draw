@@ -19,10 +19,10 @@ v-container.pa-0
 
   v-alert(
     v-if="availablePrizes.length < 2"
-    type="error"
+    type="warning"
     variant="elevated"
     class="my-6 rounded-lg"
-    prepend-icon="mdi-alert-circle"
+    color="red-darken-2"
   ) 至少輸入兩個獎項以開啟抽獎功能
 
   div.d-flex.flex-column.flex-sm-row.align-sm-center.justify-space-between.my-4(v-if="prizes.length > 0")

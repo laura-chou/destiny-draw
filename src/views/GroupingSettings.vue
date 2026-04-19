@@ -36,7 +36,7 @@ v-container.pa-0
             v-icon(color="orange-darken-4" size="large") mdi-account-multiple-plus
             div.ml-4
               div.text-h6.font-weight-bold.text-orange-darken-4 任務分配模式
-              div.text-caption.text-orange-darken-2 開啟後將依照任務人數分配，多餘的人進入未分配組
+              div.text-caption.text-orange-darken-2 開啟後將依照任務人數分配
           v-switch(
             v-model="isTaskAssignmentEnabled"
             color="orange-darken-3"
@@ -81,19 +81,17 @@ v-container.pa-0
       v-alert(
         v-if="groupingStore.tasks.length === 0"
         type="warning"
-        variant="tonal"
-        color="orange-darken-4"
+        variant="elevated"
+        color="red-darken-2"
         class="my-4"
-        prepend-icon="mdi-alert"
       ) 目前尚未新增任何任務，請在上方輸入名稱。
 
       v-alert(
         v-if="totalTaskCapacity > namesCount"
         type="warning"
-        variant="tonal"
-        color="red-darken-4"
+        variant="elevated"
+        color="red-darken-2"
         class="my-4"
-        prepend-icon="mdi-account-alert"
       ) 任務總名額 ({{ totalTaskCapacity }}) 超過人員總數 ({{ namesCount }})，部分任務將無人分配。
 
       div.d-flex.flex-column.flex-sm-row.align-sm-center.justify-space-between.my-4(v-if="groupingStore.tasks.length > 0")
@@ -111,8 +109,8 @@ v-container.pa-0
             tr
               th.text-center(style="width: 40px")
                 v-checkbox-btn(v-model="selectAll" @change="toggleSelectAll" color="amber-darken-4")
-              th.text-left 任務名稱
-              th.text-center(style="width: 150px") 名額
+              th.text-center 名稱
+              th.text-center(style="width: 100px") 名額
               th.text-center(style="width: 100px") 操作
           tbody
             tr(v-for="task in groupingStore.tasks" :key="task.id")

@@ -18,7 +18,7 @@ v-app
 
   v-app-bar(app color="#1a237e" density="compact" flat class="app-bar")
     v-app-bar-nav-icon(color="amber-accent-4" @click="drawer = !drawer")
-    v-toolbar-title.text-amber-accent-4.font-weight-black 命運之抽
+    v-toolbar-title.text-amber-accent-4.font-weight-black 交給命運
 
   v-main.main-content
     v-container(fluid)
