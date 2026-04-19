@@ -100,7 +100,7 @@ v-container.pa-4
 
           // Unassigned Group Results
           v-col(
-            v-if="groupingStore.isTaskAssignmentEnabled && unassigned.length > 0"
+            v-if="unassigned.length > 0"
             cols="12"
             sm="6"
             md="4"
@@ -193,13 +193,17 @@ const handleGrouping = () => {
     // Standard Grouping mode
     const size = Math.max(1, groupingStore.groupSize)
     const result: string[][] = []
-    for (let i = 0; i < shuffled.length; i += size) {
-      result.push(shuffled.slice(i, i + size))
+
+    // Calculate how many full groups we can form
+    const fullGroupsCount = Math.floor(shuffled.length / size)
+
+    for (let i = 0; i < fullGroupsCount; i++) {
+      result.push(shuffled.slice(i * size, (i + 1) * size))
     }
 
     groups.value = result
     taskResults.value = []
-    unassigned.value = []
+    unassigned.value = shuffled.slice(fullGroupsCount * size)
   }
 }
 </script>
