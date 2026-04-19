@@ -30,16 +30,24 @@ export const useGroupingStore = defineStore('grouping', {
     }
   },
   actions: {
+    clearResults() {
+      this.lastGroups = []
+      this.lastTaskResults = []
+      this.lastUnassigned = []
+    },
     setNames(names: string) {
       this.names = names
+      this.clearResults()
       this.saveToSession()
     },
     setGroupSize(size: number) {
       this.groupSize = size
+      this.clearResults()
       this.saveToSession()
     },
     setTaskAssignmentEnabled(enabled: boolean) {
       this.isTaskAssignmentEnabled = enabled
+      this.clearResults()
       this.saveToSession()
     },
     addTask() {
@@ -49,21 +57,25 @@ export const useGroupingStore = defineStore('grouping', {
         count: 1
       }
       this.tasks.push(newTask)
+      this.clearResults()
       this.saveToSession()
     },
     updateTask(id: string, updates: Partial<Task>) {
       const index = this.tasks.findIndex(t => t.id === id)
       if (index !== -1) {
         this.tasks[index] = { ...this.tasks[index], ...updates }
+        this.clearResults()
         this.saveToSession()
       }
     },
     removeTask(id: string) {
       this.tasks = this.tasks.filter(t => t.id !== id)
+      this.clearResults()
       this.saveToSession()
     },
     removeMultipleTasks(ids: string[]) {
       this.tasks = this.tasks.filter(t => !ids.includes(t.id))
+      this.clearResults()
       this.saveToSession()
     },
     addTaskWithName(name: string) {
@@ -73,6 +85,7 @@ export const useGroupingStore = defineStore('grouping', {
         count: 1
       }
       this.tasks.push(newTask)
+      this.clearResults()
       this.saveToSession()
     },
     setResults(groups: string[][], taskResults: TaskResult[], unassigned: string[]) {
