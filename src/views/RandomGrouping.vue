@@ -40,7 +40,7 @@ v-container.pa-4
         ) 注意：任務總名額 ({{ totalTaskCapacity }}) 超過目前人數 ({{ namesCount }})。
 
   v-expand-transition
-    v-row(v-if="groups.length > 0 || taskResults.length > 0")
+    v-row(v-if="groupingStore.lastGroups.length > 0 || groupingStore.lastTaskResults.length > 0")
       v-col(cols="12")
         div.d-flex.align-center.justify-space-between.my-4
           div.text-h6.text-amber-lighten-3 分組結果
@@ -55,7 +55,7 @@ v-container.pa-4
           // Standard Grouping Results
           v-col(
             v-if="!groupingStore.isTaskAssignmentEnabled"
-            v-for="(group, index) in groups"
+            v-for="(group, index) in groupingStore.lastGroups"
             :key="\`group-\${index}\`"
             cols="12"
             sm="6"
@@ -77,7 +77,7 @@ v-container.pa-4
           // Task Assignment Results
           v-col(
             v-if="groupingStore.isTaskAssignmentEnabled"
-            v-for="(taskGroup, index) in taskResults"
+            v-for="(taskGroup, index) in groupingStore.lastTaskResults"
             :key="\`task-\${index}\`"
             cols="12"
             sm="6"
@@ -100,7 +100,7 @@ v-container.pa-4
 
           // Unassigned Group Results
           v-col(
-            v-if="unassigned.length > 0"
+            v-if="groupingStore.lastUnassigned.length > 0"
             cols="12"
             sm="6"
             md="4"
@@ -112,7 +112,7 @@ v-container.pa-4
               v-card-text.pa-4
                 v-list(density="compact" bg-color="transparent")
                   v-list-item(
-                    v-for="(name, nIdx) in unassigned"
+                    v-for="(name, nIdx) in groupingStore.lastUnassigned"
                     :key="nIdx"
                     :title="name"
                     prepend-icon="mdi-account-off"
@@ -120,19 +120,10 @@ v-container.pa-4
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import { useGroupingStore } from '@/store/grouping'
-
-interface TaskResult {
-  name: string
-  members: string[]
-  targetCount: number
-}
+import { computed } from 'vue'
+import { useGroupingStore, type TaskResult } from '@/store/grouping'
 
 const groupingStore = useGroupingStore()
-const groups = ref<string[][]>([])
-const taskResults = ref<TaskResult[]>([])
-const unassigned = ref<string[]>([])
 
 const namesCount = computed(() => {
   return groupingStore.names
@@ -171,14 +162,17 @@ const handleGrouping = () => {
     [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
   }
 
+  let resultGroups: string[][] = []
+  let resultTaskResults: TaskResult[] = []
+  let resultUnassigned: string[] = []
+
   if (groupingStore.isTaskAssignmentEnabled) {
     // Task Assignment mode
-    const taskResultList: TaskResult[] = []
     let currentIdx = 0
 
     groupingStore.tasks.forEach(task => {
       const members = shuffled.slice(currentIdx, currentIdx + task.count)
-      taskResultList.push({
+      resultTaskResults.push({
         name: task.name || '未命名任務',
         members,
         targetCount: task.count
@@ -186,25 +180,22 @@ const handleGrouping = () => {
       currentIdx += task.count
     })
 
-    taskResults.value = taskResultList
-    unassigned.value = shuffled.slice(currentIdx)
-    groups.value = []
+    resultUnassigned = shuffled.slice(currentIdx)
   } else {
     // Standard Grouping mode
     const size = Math.max(1, groupingStore.groupSize)
-    const result: string[][] = []
 
     // Calculate how many full groups we can form
     const fullGroupsCount = Math.floor(shuffled.length / size)
 
     for (let i = 0; i < fullGroupsCount; i++) {
-      result.push(shuffled.slice(i * size, (i + 1) * size))
+      resultGroups.push(shuffled.slice(i * size, (i + 1) * size))
     }
 
-    groups.value = result
-    taskResults.value = []
-    unassigned.value = shuffled.slice(fullGroupsCount * size)
+    resultUnassigned = shuffled.slice(fullGroupsCount * size)
   }
+
+  groupingStore.setResults(resultGroups, resultTaskResults, resultUnassigned)
 }
 </script>
 
