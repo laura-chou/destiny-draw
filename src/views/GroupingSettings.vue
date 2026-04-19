@@ -1,14 +1,14 @@
 <template lang="pug">
-v-container.pa-4
+v-container.pa-0
   v-row
     v-col(cols="12")
-      v-card.pa-4.grouping-settings-card(variant="elevated" color="amber-lighten-4")
+      v-card.pa-4.grouping-card(variant="elevated" color="amber-lighten-4")
         div.d-flex.align-center.justify-space-between.mb-4
           div.d-flex.align-center
             v-icon(color="orange-darken-4" size="large") mdi-account-cog
             div.ml-4
-              div.text-h6.font-weight-bold.text-orange-darken-4 分組設定
-              div.text-caption.text-orange-darken-2 設定人員名單及分組規則
+              div.text-h6.font-weight-bold.text-orange-darken-4 人員名單
+              div.text-caption.text-orange-darken-2 設定分組人員（目前 {{ namesCount }} 人）
           v-btn(
             v-if="groupingStore.names"
             variant="text"
@@ -19,121 +19,142 @@ v-container.pa-4
 
         v-textarea(
           :model-value="groupingStore.names"
-          :label="\`人員名單 (目前 \${namesCount} 人，請以逗號分隔)\`"
           placeholder="例如: A, B, C, D, E"
           variant="solo"
           rows="4"
           bg-color="white"
-          class="mb-6"
+          hide-details
           persistent-placeholder
           @update:model-value="groupingStore.setNames"
         )
 
-        v-divider.mb-6.border-opacity-25
-
-        div.d-flex.align-center.mb-4
+  v-row.mt-4
+    v-col(cols="12")
+      v-card.pa-4.grouping-card(variant="elevated" color="amber-lighten-4")
+        div.d-flex.align-center.justify-space-between
+          div.d-flex.align-center
+            v-icon(color="orange-darken-4" size="large") mdi-account-multiple-plus
+            div.ml-4
+              div.text-h6.font-weight-bold.text-orange-darken-4 任務分配模式
+              div.text-caption.text-orange-darken-2 開啟後將依照任務人數分配，多餘的人進入未分配組
           v-switch(
             v-model="isTaskAssignmentEnabled"
             color="orange-darken-3"
-            label="啟用任務分配"
             hide-details
-            class="mr-4"
+            inset
           )
-          v-icon(
-            v-if="isTaskAssignmentEnabled"
-            color="orange-darken-3"
-            title="任務分配模式：依照指定任務的人數進行分配，多餘的人將進入未分配組"
-          ) mdi-information-outline
 
-        // Standard Grouping
-        v-expand-transition
-          div(v-if="!isTaskAssignmentEnabled")
-            v-row(align="center")
-              v-col(cols="12" sm="6")
+  // Standard Grouping Rule
+  v-expand-transition
+    v-row(v-if="!isTaskAssignmentEnabled" class="mt-4")
+      v-col(cols="12")
+        v-card.pa-4(variant="elevated" color="amber-lighten-4")
+          div.text-subtitle-1.font-weight-bold.text-orange-darken-4.mb-2 一般分組規則
+          v-text-field(
+            v-model.number="groupSize"
+            type="number"
+            label="每組人數"
+            min="1"
+            variant="solo"
+            bg-color="white"
+            hide-details
+            prepend-inner-icon="mdi-account-multiple"
+          )
+
+  // Task Assignment UI
+  v-expand-transition
+    div(v-if="isTaskAssignmentEnabled")
+      v-row(class="mt-4" align="center")
+        v-col(cols="9" sm="10" md="11")
+          v-text-field(
+            v-model="newTaskName"
+            label="輸入任務名稱"
+            hide-details
+            variant="solo"
+            bg-color="white"
+            @keyup.enter="handleAddTask"
+            prepend-inner-icon="mdi-clipboard-text-outline"
+          )
+        v-col(cols="3" sm="2" md="1")
+          v-btn(color="amber-darken-2" @click="handleAddTask" icon="mdi-plus")
+
+      v-alert(
+        v-if="groupingStore.tasks.length === 0"
+        type="warning"
+        variant="tonal"
+        color="orange-darken-4"
+        class="my-4"
+        prepend-icon="mdi-alert"
+      ) 目前尚未新增任何任務，請在上方輸入名稱。
+
+      v-alert(
+        v-if="totalTaskCapacity > namesCount"
+        type="warning"
+        variant="tonal"
+        color="red-darken-4"
+        class="my-4"
+        prepend-icon="mdi-account-alert"
+      ) 任務總名額 ({{ totalTaskCapacity }}) 超過人員總數 ({{ namesCount }})，部分任務將無人分配。
+
+      div.d-flex.flex-column.flex-sm-row.align-sm-center.justify-space-between.my-4(v-if="groupingStore.tasks.length > 0")
+        div.text-h6.text-amber-lighten-3 任務清單 (總名額: {{ totalTaskCapacity }})
+        v-btn(
+          v-if="selectedTasks.length > 0"
+          color="red-darken-2"
+          prepend-icon="mdi-delete"
+          @click="handleDeleteSelected"
+        ) 刪除 ({{ selectedTasks.length }})
+
+      v-card(v-if="groupingStore.tasks.length > 0" flat class="task-table-card rounded-lg overflow-hidden mb-8")
+        v-table.task-table
+          thead
+            tr
+              th.text-center(style="width: 40px")
+                v-checkbox-btn(v-model="selectAll" @change="toggleSelectAll" color="amber-darken-4")
+              th.text-left 任務名稱
+              th.text-center(style="width: 150px") 名額
+              th.text-center(style="width: 100px") 操作
+          tbody
+            tr(v-for="task in groupingStore.tasks" :key="task.id")
+              td.text-center
+                v-checkbox-btn(v-model="selectedTasks" :value="task.id" color="amber-darken-4")
+              td
                 v-text-field(
-                  v-model.number="groupSize"
-                  type="number"
-                  label="每組人數"
-                  min="1"
-                  variant="solo"
-                  bg-color="white"
-                  prepend-inner-icon="mdi-account-multiple"
+                  :model-value="task.name"
+                  variant="underlined"
+                  density="compact"
+                  hide-details
+                  @update:model-value="(v) => groupingStore.updateTask(task.id, { name: v })"
                 )
-
-        // Task Assignment
-        v-expand-transition
-          div(v-if="isTaskAssignmentEnabled")
-            v-alert(
-              v-if="groupingStore.tasks.length === 0"
-              type="warning"
-              variant="tonal"
-              color="orange-darken-4"
-              class="mb-4"
-              prepend-icon="mdi-alert"
-            ) 目前尚未新增任何任務，請點擊「新增任務」。
-
-            v-alert(
-              v-if="totalTaskCapacity > namesCount"
-              type="warning"
-              variant="tonal"
-              color="red-darken-4"
-              class="mb-4"
-              prepend-icon="mdi-account-alert"
-            ) 任務總名額 ({{ totalTaskCapacity }}) 超過人員總數 ({{ namesCount }})，部分任務將無人分配。
-
-            div.d-flex.align-center.justify-space-between.mb-2
-              div.text-subtitle-1.font-weight-bold.text-orange-darken-4 任務清單 (總名額: {{ totalTaskCapacity }})
-              v-btn(
-                color="orange-darken-3"
-                variant="flat"
-                prepend-icon="mdi-plus"
-                size="small"
-                @click="groupingStore.addTask"
-              ) 新增任務
-
-            v-table.task-table.mb-4(v-if="groupingStore.tasks.length > 0")
-              thead
-                tr
-                  th.text-left 任務名稱
-                  th.text-left 名額
-                  th.text-center 操作
-              tbody
-                tr(v-for="task in groupingStore.tasks" :key="task.id")
-                  td
-                    v-text-field(
-                      :model-value="task.name"
-                      placeholder="例如: 打掃"
-                      variant="underlined"
-                      density="compact"
-                      hide-details
-                      @update:model-value="(v) => groupingStore.updateTask(task.id, { name: v })"
-                    )
-                  td(style="width: 120px")
-                    v-text-field(
-                      :model-value="task.count"
-                      type="number"
-                      min="1"
-                      variant="underlined"
-                      density="compact"
-                      hide-details
-                      @update:model-value="(v) => groupingStore.updateTask(task.id, { count: parseInt(v) || 1 })"
-                    )
-                  td.text-center
-                    v-btn(
-                      icon="mdi-delete"
-                      variant="text"
-                      color="red-darken-2"
-                      size="small"
-                      @click="groupingStore.removeTask(task.id)"
-                    )
-
+              td.text-center
+                v-text-field(
+                  :model-value="task.count"
+                  type="number"
+                  min="1"
+                  variant="underlined"
+                  density="compact"
+                  hide-details
+                  @update:model-value="(v) => groupingStore.updateTask(task.id, { count: parseInt(v) || 1 })"
+                  class="centered-input"
+                )
+              td.text-center
+                v-btn(
+                  icon="mdi-delete"
+                  variant="text"
+                  color="red-darken-2"
+                  size="small"
+                  @click="handleDeleteTask(task.id)"
+                )
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useGroupingStore } from '@/store/grouping'
 
 const groupingStore = useGroupingStore()
+const newTaskName = ref('')
+const selectedTasks = ref<string[]>([])
+const selectAll = ref(false)
 
 const isTaskAssignmentEnabled = computed({
   get: () => groupingStore.isTaskAssignmentEnabled,
@@ -162,22 +183,80 @@ const handleClearNames = () => {
     groupingStore.setNames('')
   }
 }
+
+const handleAddTask = () => {
+  if (newTaskName.value.trim()) {
+    groupingStore.addTaskWithName(newTaskName.value.trim())
+    newTaskName.value = ''
+  }
+}
+
+const handleDeleteTask = (id: string) => {
+  if (confirm('確定要刪除此任務嗎？')) {
+    groupingStore.removeTask(id)
+    selectedTasks.value = selectedTasks.value.filter(tid => tid !== id)
+  }
+}
+
+const toggleSelectAll = () => {
+  if (selectAll.value) {
+    selectedTasks.value = groupingStore.tasks.map(t => t.id)
+  } else {
+    selectedTasks.value = []
+  }
+}
+
+watch(selectedTasks, (newVal) => {
+  if (newVal.length === groupingStore.tasks.length && groupingStore.tasks.length > 0) {
+    selectAll.value = true
+  } else {
+    selectAll.value = false
+  }
+})
+
+const handleDeleteSelected = () => {
+  if (confirm(`確定要刪除這 ${selectedTasks.value.length} 個任務嗎？`)) {
+    groupingStore.removeMultipleTasks(selectedTasks.value)
+    selectedTasks.value = []
+  }
+}
 </script>
 
 <style lang="stylus" scoped>
-.grouping-settings-card
+.grouping-card
   border-left 8px solid #ff6f00 !important
 
+.task-table-card
+  background-color #fef3c7
+
 .task-table
-  background-color rgba(255, 255, 255, 0.3) !important
-  border-radius 8px
-  overflow hidden
+  background-color #fef3c7 !important
 
-  :deep(th)
-    background-color rgba(255, 111, 0, 0.1) !important
-    color #ff6f00 !important
-    font-weight bold !important
+  :deep(table)
+    table-layout fixed
 
-  :deep(td)
-    border-bottom 1px solid rgba(255, 111, 0, 0.1) !important
+  thead
+    background-color #fbbf24
+
+    th
+      font-weight bold !important
+      font-size 1.1rem !important
+      color #78350f !important
+
+      :deep(.v-selection-control__wrapper)
+        width 100%
+
+  tbody
+    tr
+      td
+        border-bottom 1px solid #fcd34d !important
+        color #92400e !important
+
+      :deep(.v-selection-control)
+        display flex
+        justify-content center
+
+.centered-input
+  :deep(input)
+    text-align center
 </style>

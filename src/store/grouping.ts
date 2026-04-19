@@ -49,6 +49,19 @@ export const useGroupingStore = defineStore('grouping', {
       this.tasks = this.tasks.filter(t => t.id !== id)
       this.saveToSession()
     },
+    removeMultipleTasks(ids: string[]) {
+      this.tasks = this.tasks.filter(t => !ids.includes(t.id))
+      this.saveToSession()
+    },
+    addTaskWithName(name: string) {
+      const newTask: Task = {
+        id: Date.now().toString(),
+        name,
+        count: 1
+      }
+      this.tasks.push(newTask)
+      this.saveToSession()
+    },
     saveToSession() {
       sessionStorage.setItem('groupingNames', this.names)
       sessionStorage.setItem('groupingSize', this.groupSize.toString())
