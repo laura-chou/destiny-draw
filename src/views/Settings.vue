@@ -17,10 +17,13 @@ v-container.pa-0
     v-col(cols="3" sm="2" md="1")
       v-btn(color="amber-darken-2" @click="handleAddPrize" icon="mdi-plus")
 
-  v-card(v-if="availablePrizes.length < 2" flat class="my-6 rounded-lg overflow-hidden")
-    div.red-banner.d-flex.align-center.justify-center.pa-4
-      v-icon(color="white" class="mr-2") mdi-alert-circle
-      span.text-white.font-weight-bold 至少輸入兩個獎項以開啟抽獎功能
+  v-alert(
+    v-if="availablePrizes.length < 2"
+    type="error"
+    variant="elevated"
+    class="my-6 rounded-lg"
+    prepend-icon="mdi-alert-circle"
+  ) 至少輸入兩個獎項以開啟抽獎功能
 
   div.d-flex.flex-column.flex-sm-row.align-sm-center.justify-space-between.my-4(v-if="prizes.length > 0")
     div.text-h6.text-amber-lighten-3.mb-2.mb-sm-0 獎項列表 ({{ prizes.length }}，剩餘 {{ availablePrizes.length }} 可抽)
@@ -37,7 +40,7 @@ v-container.pa-0
               span 顯示
               v-checkbox-btn(v-model="allActive" color="success" density="compact")
           th.text-center 名稱
-          th.text-center(style="width: 120px") 操作
+          th.text-center(style="width: 80px") 操作
       tbody
         tr(v-for="prize in prizes" :key="prize.id" :class="{ 'inactive-row': !prize.isActive }")
           td.text-center
@@ -45,21 +48,16 @@ v-container.pa-0
           td.text-center
             v-checkbox-btn(:model-value="prize.isActive" @update:model-value="val => prizeStore.togglePrizeActive(prize.id, val)" color="success")
           td.text-center
-            span(:class="{ 'text-decoration-line-through text-grey': !prize.isActive }") {{ prize.name }}
+            v-text-field(
+              :model-value="prize.name"
+              variant="underlined"
+              density="compact"
+              hide-details
+              @update:model-value="(v) => prizeStore.updatePrize(prize.id, v)"
+            )
           td.text-center
             div.d-flex.justify-center
-              v-btn(icon="mdi-pencil" variant="text" color="blue-darken-2" size="small" @click="openEditDialog(prize)")
               v-btn(icon="mdi-delete" variant="text" color="red-darken-2" size="small" @click="deletePrize(prize.id)")
-
-  v-dialog(v-model="editDialog" max-width="400px")
-    v-card
-      v-card-title 編輯獎項
-      v-card-text
-        v-text-field(v-model="editingPrizeName" label="獎項名稱")
-      v-card-actions
-        v-spacer
-        v-btn(color="grey" variant="text" @click="editDialog = false") 取消
-        v-btn(color="primary" variant="text" @click="handleUpdatePrize") 儲存
 </template>
 
 <script setup lang="ts">
@@ -121,31 +119,9 @@ const handleDeleteSelected = () => {
   }
 }
 
-// Edit logic
-const editDialog = ref(false)
-const editingPrizeId = ref('')
-const editingPrizeName = ref('')
-
-const openEditDialog = (prize: { id: string, name: string }) => {
-  editingPrizeId.value = prize.id
-  editingPrizeName.value = prize.name
-  editDialog.value = true
-}
-
-const handleUpdatePrize = () => {
-  if (editingPrizeName.value.trim()) {
-    prizeStore.updatePrize(editingPrizeId.value, editingPrizeName.value.trim())
-    editDialog.value = false
-  }
-}
 </script>
 
 <style lang="stylus" scoped>
-.red-banner
-  height 40px
-  background-color #e53935
-  width 100%
-
 .exclude-card
   border-left 8px solid #ff6f00 !important
 
