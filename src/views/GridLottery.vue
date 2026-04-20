@@ -95,7 +95,7 @@ const buttons = [
     x: 1, y: 1,
     background: '#ff5722',
     shadow: '0 4px 0 #e64a19',
-    fonts: [{ text: 'GO!', top: '25%', fontColor: '#fff', fontSize: '24px', fontWeight: '900' }]
+    fonts: [{ text: 'GO!', top: '30%', fontColor: '#fff', fontSize: '24px', fontWeight: '900' }]
   }
 ]
 

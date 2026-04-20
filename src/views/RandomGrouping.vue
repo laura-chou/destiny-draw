@@ -9,13 +9,13 @@ v-container.pa-4
             div.ml-4
               div.text-h6.font-weight-bold.text-orange-darken-4 隨機分組
               div.text-caption.text-orange-darken-2 目前有 {{ namesCount }} 位成員
-          v-btn(
-            color="amber-darken-3"
+          v-btn.font-weight-bold.text-white(
+            color="bg-orange-darken-3"
             size="large"
-            prepend-icon="mdi-shuffle-variant"
+            class=""
             @click="handleGrouping"
-              :disabled="isStartDisabled"
-          ) 開始隨機分組
+            :disabled="isStartDisabled"
+          ) 開始分組
 
   v-expand-transition
     v-row(v-if="!hasEnoughNames")

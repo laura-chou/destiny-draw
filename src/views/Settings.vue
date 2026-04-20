@@ -8,7 +8,8 @@ v-container.pa-0
             v-icon(color="orange-darken-4" size="large") mdi-filter-variant-remove
             div.ml-4
               div.text-h6.font-weight-bold.text-orange-darken-4 排除中獎模式
-              div.text-caption.text-orange-darken-2 開啟後，已中獎的獎項將自動從獎池中移除
+              div.text-caption.text-orange-darken-2 開啟後
+              div.text-caption.text-orange-darken-2 已中獎的獎項將自動從獎池中移除
           v-switch(v-model="excludeWinners" color="orange-darken-3" hide-details inset)
 
   v-row(align="center")
